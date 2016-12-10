@@ -10,7 +10,7 @@ import (
 type EventLevel uint8
 
 const (
-	//LevelError is a level for erros that can wake you on 4 hours past midnight
+	//LevelError is a level for errors that can wake you on 4 hours past midnight
 	LevelError = EventLevel(iota)
 
 	//LevelWarn is a level for an unexpected technical or business event happened, customers may be affected, but probably no immediate human intervention is required. On call people won't be called immediately, but support personnel will want to review these issues asap to understand what the impact is. Basically any issue that needs to be tracked but may not require immediate intervention.
