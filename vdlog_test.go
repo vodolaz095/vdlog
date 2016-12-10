@@ -185,4 +185,6 @@ func Example() {
 	feedbackLogger.Error("testing %s", "test")
 	feedbackLogger.Error("Simple string")
 
+	//wait until all events are processed
+	time.Sleep(100 * time.Millisecond)
 }

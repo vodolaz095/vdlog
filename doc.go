@@ -29,6 +29,7 @@ See minimal example for module usage:
 	package main
 
 	import (
+		"time"
 		"github.com/vodolaz095/vdlog"
 	)
 
@@ -42,6 +43,9 @@ See minimal example for module usage:
 		vdlog.Warn("testFacility", "testing %s", "test")
 		vdlog.Error("testFacility", "testing %s", "test")
 		vdlog.Error("testFacility", "Simple string")
+
+		//wait until all events are processed
+		time.Sleep(100*time.Millisecond)
 	}
 
 See full example for module usage:

@@ -14,6 +14,7 @@ Full example of usage
 	package main
 	
 	import (
+		"time"
 		"github.com/vodolaz095/vdlog"
 	)
 
@@ -114,6 +115,8 @@ Full example of usage
 		feedbackLogger.Error("testing %s", "test")
 		feedbackLogger.Error("Simple string")
 
+		//wait until all events are processed
+		time.Sleep(100*time.Millisecond)
 	}
 
 ```
