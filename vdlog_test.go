@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"testing"
 	"time"
-
-	vdlog "./"
 )
 
 func TestGlobalLog(t *testing.T) {
@@ -94,21 +92,21 @@ func Example() {
 	/*
 	 *  Set Console Verbosity level
 	 */
-	vdlog.SetConsoleVerbosity(vdlog.LevelSilly) //highest verbosity
-	vdlog.SetConsoleVerbosity(vdlog.LevelDebug)
-	vdlog.SetConsoleVerbosity(vdlog.LevelInfo)
-	vdlog.SetConsoleVerbosity(vdlog.LevelWarn)
-	vdlog.SetConsoleVerbosity(vdlog.LevelError) //lowest verbosity
+	SetConsoleVerbosity(LevelSilly) //highest verbosity
+	SetConsoleVerbosity(LevelDebug)
+	SetConsoleVerbosity(LevelInfo)
+	SetConsoleVerbosity(LevelWarn)
+	SetConsoleVerbosity(LevelError) //lowest verbosity
 
 	/*
 	 * Enable output to local file
 	 */
 	//LogErrorsToFile outputs errors only
-	vdlog.LogErrorsToFile("/var/log/my_vdlog_errors.log")
+	LogErrorsToFile("/var/log/my_vdlog_errors.log")
 	//LogNormalToFile outputs events from error to debug levels
-	vdlog.LogNormalToFile("/var/log/my_vdlog.log")
+	LogNormalToFile("/var/log/my_log")
 	//We can log defined level ranges to file
-	vdlog.LogToFile("/var/log/onlyInfoAndWarn.log", vdlog.LevelWarn, vdlog.LevelInfo)
+	LogToFile("/var/log/onlyInfoAndWarn.log", LevelWarn, LevelInfo)
 
 	/*
 	 * Add custom sink for storing events
@@ -116,13 +114,13 @@ func Example() {
 	 * facility with level lower and including the `LevelInfo`
 	 * If Payload equals to `bad`, error is returned
 	 */
-	vdlog.AddSink("feedback", func(e vdlog.Event) error {
+	AddSink("feedback", func(e Event) error {
 		// we ignore events not related for feedback facility
 		if e.Facility != "feedback" {
 			return nil
 		}
 		//we ignore events of low priority
-		if e.Level > vdlog.LevelInfo {
+		if e.Level > LevelInfo {
 			return nil
 		}
 		//check if payload is the proper one
@@ -159,7 +157,7 @@ func Example() {
 	/*
 	 * Add function to report sink misbehaviour - i.e. when it returns error
 	 */
-	vdlog.BrokenSinkReporter = func(brokenSinkName string, eventThatCloggedIt vdlog.Event, errorRecievedFromSink error) {
+	BrokenSinkReporter = func(brokenSinkName string, eventThatCloggedIt Event, errorRecievedFromSink error) {
 		fmt.Printf("Sink %s is broken by event %s with error %s", brokenSinkName, eventThatCloggedIt.String(), errorRecievedFromSink.Error())
 		panic("broken sink")
 	}
@@ -167,18 +165,18 @@ func Example() {
 	/*
 	 * Using global logger
 	 */
-	vdlog.Silly("testFacility", "testing %s", "test")
-	vdlog.Verbose("testFacility", "testing %s", "test")
-	vdlog.Debug("testFacility", "testing %s", "test")
-	vdlog.Info("testFacility", "testing %s", "test")
-	vdlog.Warn("testFacility", "testing %s", "test")
-	vdlog.Error("testFacility", "testing %s", "test")
-	vdlog.Error("testFacility", "Simple string")
+	Silly("testFacility", "testing %s", "test")
+	Verbose("testFacility", "testing %s", "test")
+	Debug("testFacility", "testing %s", "test")
+	Info("testFacility", "testing %s", "test")
+	Warn("testFacility", "testing %s", "test")
+	Error("testFacility", "testing %s", "test")
+	Error("testFacility", "Simple string")
 
 	/*
 	 * Using custom logger for `feedback` facility
 	 */
-	feedbackLogger := vdlog.New("feedback")
+	feedbackLogger := New("feedback")
 	feedbackLogger.Silly("testing %s", "test")
 	feedbackLogger.Verbose("testing %s", "test")
 	feedbackLogger.Debug("testing %s", "test")
