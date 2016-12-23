@@ -22,7 +22,7 @@ func TestGlobalLog(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	if len(evnt) != 6 {
-		t.Errorf("Wrong number of events emmited - %v instead of %v", len(evnt), 6)
+		t.Errorf("Wrong number of events emitted - %v instead of %v", len(evnt), 6)
 	}
 
 	if evnt[0].Level != LevelError || evnt[0].Payload != "error error" || evnt[0].Facility != "test" {
@@ -64,7 +64,7 @@ func TestLoggerLog(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	if len(evnt) != 6 {
-		t.Errorf("Wrong number of events emmited - %v instead of %v", len(evnt), 6)
+		t.Errorf("Wrong number of events emitted - %v instead of %v", len(evnt), 6)
 	}
 
 	if evnt[0].Level != LevelError || evnt[0].Payload != "error error" || evnt[0].Facility != "TestLoggerLog" {
@@ -130,7 +130,7 @@ func Example() {
 
 		//start pretty printing
 		fmt.Println("===================")
-		fmt.Printf("%v seconds ago event with level %s occured!\n",
+		fmt.Printf("%v seconds ago event with level %s occurred!\n",
 			e.Ago().Seconds(),
 			e.GetLevelString())
 

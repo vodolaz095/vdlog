@@ -1,6 +1,6 @@
 package vdlog
 
-//Logger is a instance for emiting log events bound to facility
+//Logger is a instance for emitting log events bound to facility
 type Logger struct {
 	Facility string
 }
