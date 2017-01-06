@@ -35,7 +35,7 @@ func (l *Logger) Error(format string, data ...interface{}) {
 	log(LevelError, l.Facility, format, data...)
 }
 
-//Log makes Logger emit Event with all things customizeble
+//Log makes Logger emit Event with all things customizable
 func (l *Logger) log(level EventLevel, format string, data ...interface{}) {
 	log(level, l.Facility, format, data...)
 }
