@@ -1,7 +1,7 @@
 vdlog
 ======================
 [![Build Status](https://travis-ci.org/vodolaz095/vdlog.png?branch=master)](https://travis-ci.org/vodolaz095/vdlog)
-[![GoDoc](https://godoc.org/github.com/vodolaz095/vdlog?status.svg)](https://godoc.org/github.com/vodolaz095/vdlog)
+[![GoDoc](https://godoc.org/gopkg.in/vodolaz095/vdlog.v2?status.svg)](https://godoc.org/gopkg.in/vodolaz095/vdlog.v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vodolaz095/vdlog)](https://goreportcard.com/report/github.com/vodolaz095/vdlog)
 
 
