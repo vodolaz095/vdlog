@@ -1,5 +1,7 @@
 package vdlog
 
+import "fmt"
+
 //Logger is a instance for emitting log events bound to facility
 type Logger struct {
 	Facility string
@@ -30,9 +32,24 @@ func (l *Logger) Warn(format string, data ...interface{}) {
 	log(LevelWarn, l.Facility, format, data...)
 }
 
-//Error makes Logger emit Event with LevelError priori
+//Error makes Logger emit Event with LevelError priority
 func (l *Logger) Error(format string, data ...interface{}) {
 	log(LevelError, l.Facility, format, data...)
+}
+
+//Print allows to print anything as LevelInfo event with payload created by fmt.Print
+func (l *Logger) Print(v ...interface{}) {
+	log(LevelInfo, l.Facility, fmt.Sprint(v))
+}
+
+//Println allows to print anything as LevelInfo event with payload created by fmt.Println
+func (l *Logger) Println(v ...interface{}) {
+	log(LevelInfo, l.Facility, fmt.Sprintln(v))
+}
+
+//Printf allows to print anything as LevelInfo event with payload created by fmt.Printf
+func (l *Logger) Printf(format string, v ...interface{}) {
+	log(LevelInfo, l.Facility, fmt.Sprintf(format, v))
 }
 
 //Log makes Logger emit Event with all things customizable
