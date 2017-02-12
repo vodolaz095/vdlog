@@ -15,7 +15,7 @@ Package assumes that there are this event levels:
 
 - Debug is for extremely detailed and potentially high volume logs that you don't typically want enabled even during normal development. Examples include dumping a full object hierarchy, logging some state during every iteration of a large loop, etc.
 
-- Silly is putting every fart to log
+- Silly is putting every fart to log.
 
 After events emitted, they are all send to buffered channel called `spine`.
 Than, each event is processed via separate goroutines
@@ -30,18 +30,18 @@ See minimal example for module usage:
 
 	import (
 		"time"
-		"github.com/vodolaz095/vdlog"
+		"gopkg.in/vodolaz095/vdlog.v2"
 	)
 
 	func main(){
 		vdlog.SetConsoleVerbosity(LevelSilly)
 
-		vdlog.Silly("testFacility", "testing %s", "test")
-		vdlog.Verbose("testFacility", "testing %s", "test")
-		vdlog.Debug("testFacility", "testing %s", "test")
-		vdlog.Info("testFacility", "testing %s", "test")
-		vdlog.Warn("testFacility", "testing %s", "test")
-		vdlog.Error("testFacility", "testing %s", "test")
+		vdlog.Sillyf("testFacility", "testing %s", "test")
+		vdlog.Verbosef("testFacility", "testing %s", "test")
+		vdlog.Debugf("testFacility", "testing %s", "test")
+		vdlog.Infof("testFacility", "testing %s", "test")
+		vdlog.Warnf("testFacility", "testing %s", "test")
+		vdlog.Errorf("testFacility", "testing %s", "test")
 		vdlog.Error("testFacility", "Simple string")
 
 		//wait until all events are processed

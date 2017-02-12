@@ -12,12 +12,12 @@ Installing
 
 ```shell
 
-   go get gopkg.in/vodolaz095/vdlog.v1
+   go get gopkg.in/vodolaz095/vdlog.v2
 
 ```
 
 
-Full example of usage (v1)
+Full example of usage
 ======================
 
 ```go
@@ -26,7 +26,7 @@ Full example of usage (v1)
 	
 	import (
 		"time"
-		"github.com/vodolaz095/vdlog"
+		"gopkg.in/vodolaz095/vdlog.v2"
 	)
 
 	func main() {
@@ -84,7 +84,7 @@ Full example of usage (v1)
 			//where in source code does the message was called
 			fmt.Println(e.StringWithCaller())
 			//will output something like
-			// Dec 08 23:49:32 TestLoggerLog VERBOSE <File: /home/vodolaz095/projects/go/src/bitbucket.org/vodolaz095/vdlog/vdlog_test.go Line:61>: verbose verbose
+			// Dec 08 23:49:32 TestLoggerLog VERBOSE <File: /home/vodolaz095/projects/go/src/bitbucket.org/vodolaz095/vdlog/vdlog_test.go:61>: verbose verbose
 	
 			//Output JSON representation of message (slice of bytes converted to string)
 			fmt.Println("JSON of event:", string(e.ToJSON()))
@@ -104,26 +104,26 @@ Full example of usage (v1)
 		}
 	
 		/*
-		 * Using global logger
+		 * Using global logger ("f" as last letter means formating like fmt.Printf)
 		 */
-		vdlog.Silly("testFacility", "testing %s", "test")
-		vdlog.Verbose("testFacility", "testing %s", "test")
-		vdlog.Debug("testFacility", "testing %s", "test")
-		vdlog.Info("testFacility", "testing %s", "test")
-		vdlog.Warn("testFacility", "testing %s", "test")
-		vdlog.Error("testFacility", "testing %s", "test")
+		vdlog.Sillyf("testFacility", "testing %s", "test")
+		vdlog.Verbosef("testFacility", "testing %s", "test")
+		vdlog.Debugf("testFacility", "testing %s", "test")
+		vdlog.Infof("testFacility", "testing %s", "test")
+		vdlog.Warnf("testFacility", "testing %s", "test")
+		vdlog.Errorf("testFacility", "testing %s", "test")
 		vdlog.Error("testFacility", "Simple string")
 	
 		/*
 		 * Using custom logger for `feedback` facility
 		 */
 		feedbackLogger := vdlog.New("feedback")
-		feedbackLogger.Silly("testing %s", "test")
-		feedbackLogger.Verbose("testing %s", "test")
-		feedbackLogger.Debug("testing %s", "test")
-		feedbackLogger.Info("testing %s", "test")
-		feedbackLogger.Warn("testing %s", "test")
-		feedbackLogger.Error("testing %s", "test")
+		feedbackLogger.Sillyf("testing %s", "test")
+		feedbackLogger.Verbosef("testing %s", "test")
+		feedbackLogger.Debugf("testing %s", "test")
+		feedbackLogger.Infof("testing %s", "test")
+		feedbackLogger.Warnf("testing %s", "test")
+		feedbackLogger.Errorf("testing %s", "test")
 		feedbackLogger.Error("Simple string")
 
 		//wait until all events are processed

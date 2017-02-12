@@ -12,12 +12,12 @@ func TestGlobalLog(t *testing.T) {
 		evnt = append(evnt, e)
 		return nil
 	})
-	Error("test", "error %s", "error")
-	Warn("test", "warn %s", "warn")
-	Info("test", "info %s", "info")
-	Verbose("test", "verbose %s", "verbose")
-	Debug("test", "debug %s", "debug")
-	Silly("test", "silly %s", "silly")
+	Error("test", "error ", "error")
+	Warnf("test", "warn %s", "warn")
+	Infof("test", "info %s", "info")
+	Verbosef("test", "verbose %s", "verbose")
+	Debugf("test", "debug %s", "debug")
+	Sillyf("test", "silly %s", "silly")
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -54,12 +54,12 @@ func TestLoggerLog(t *testing.T) {
 	})
 
 	logger := New("TestLoggerLog")
-	logger.Error("error error") //funny, go vet complains on it :-)
-	logger.Warn("warn %s", "warn")
-	logger.Info("info %s", "info")
-	logger.Verbose("verbose %s", "verbose")
-	logger.Debug("debug %s", "debug")
-	logger.Silly("silly %s", "silly")
+	logger.Errorf("error error") //funny, go vet complains on it :-)
+	logger.Warnf("warn %s", "warn")
+	logger.Infof("info %s", "info")
+	logger.Verbosef("verbose %s", "verbose")
+	logger.Debugf("debug %s", "debug")
+	logger.Silly("silly", " ", "silly")
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -78,13 +78,13 @@ func TestLoggerLog(t *testing.T) {
 		t.Error("Wrong Info behavior")
 	}
 	if evnt[3].Level != LevelVerbose || evnt[3].Payload != "verbose verbose" || evnt[3].Facility != "TestLoggerLog" {
-		t.Error("Wrong Error message")
+		t.Error("Wrong Verbose message")
 	}
 	if evnt[4].Level != LevelDebug || evnt[4].Payload != "debug debug" || evnt[4].Facility != "TestLoggerLog" {
-		t.Error("Wrong Error message")
+		t.Error("Wrong Debug message")
 	}
 	if evnt[5].Level != LevelSilly || evnt[5].Payload != "silly silly" || evnt[5].Facility != "TestLoggerLog" {
-		t.Error("Wrong Error message")
+		t.Error("Wrong Silly message")
 	}
 }
 
@@ -148,6 +148,15 @@ func Example() {
 		//Output JSON representation of message (slice of bytes converted to string)
 		fmt.Println("JSON of event:", string(e.ToJSON()))
 
+		//Output pretty printed JSON representation of message (slice of bytes converted to string)
+		fmt.Println("Indented JSON of event:", string(e.ToIndentedJSON()))
+
+		//Output XML representation of message (slice of bytes converted to string)
+		fmt.Println("XML of event:", string(e.ToXML()))
+
+		//Output pretty printed XML representation of message (slice of bytes converted to string)
+		fmt.Println("Indented XML of event:", string(e.ToIndentedXML()))
+
 		fmt.Println("===================")
 
 		//Sink processed event properly
@@ -165,24 +174,23 @@ func Example() {
 	/*
 	 * Using global logger
 	 */
-	Silly("testFacility", "testing %s", "test")
-	Verbose("testFacility", "testing %s", "test")
-	Debug("testFacility", "testing %s", "test")
-	Info("testFacility", "testing %s", "test")
-	Warn("testFacility", "testing %s", "test")
-	Error("testFacility", "testing %s", "test")
+	Sillyf("testFacility", "testing %s", "test")
+	Verbosef("testFacility", "testing %s", "test")
+	Debugf("testFacility", "testing %s", "test")
+	Infof("testFacility", "testing %s", "test")
+	Warnf("testFacility", "testing %s", "test")
 	Error("testFacility", "Simple string")
 
 	/*
 	 * Using custom logger for `feedback` facility
 	 */
 	feedbackLogger := New("feedback")
-	feedbackLogger.Silly("testing %s", "test")
-	feedbackLogger.Verbose("testing %s", "test")
-	feedbackLogger.Debug("testing %s", "test")
-	feedbackLogger.Info("testing %s", "test")
-	feedbackLogger.Warn("testing %s", "test")
-	feedbackLogger.Error("testing %s", "test")
+	feedbackLogger.Sillyf("testing %s", "test")
+	feedbackLogger.Verbosef("testing %s", "test")
+	feedbackLogger.Debugf("testing %s", "test")
+	feedbackLogger.Infof("testing %s", "test")
+	feedbackLogger.Warnf("testing %s", "test")
+	feedbackLogger.Errorf("testing %s", "test")
 	feedbackLogger.Error("Simple string")
 
 	//wait until all events are processed

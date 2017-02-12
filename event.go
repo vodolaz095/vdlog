@@ -2,6 +2,7 @@ package vdlog
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"time"
 )
@@ -22,24 +23,34 @@ const (
 	//LevelVerbose just about everything that doesn't make the "info" cut... any message that is helpful in tracking the flow through the system and isolating issues, especially during the development and QA phases. We use "debug" level logs for entry/exit of most non-trivial methods and marking interesting events and decision points inside methods.
 	LevelVerbose
 
-	//LevelDebug is for extremely detailed and potentially high volume logs that you don't typically want enabled even during normal development. Examples include dumping a full object hierarchy, logging some state during every iteration of a large loop, etc.
+	//LevelDebug is for extremely detailed and potentially high volume logs that you don't typically want enabled even during normal development. Examples include dumping a full object hierarchy, logging some state during every iteration of a large loop, etc. String representation of event has information where was it called in code.
 	LevelDebug
 
-	//LevelSilly is putting every fart to log
+	//LevelSilly is putting every fart to log. String representation of event has information where was it called in code
 	LevelSilly
 
 	//EventDateFormat is a constant for formatting date output
 	EventDateFormat = "Jan 02 15:04:05"
+
+	//EventDateFormatMilli is a constant for formatting date output including milliseconds
+	EventDateFormatMilli = "Jan 02 15:04:05.000"
 )
 
 //Event represents anything to be logged
 type Event struct {
-	Level     EventLevel `json:"level"`
-	Facility  string     `json:"facility"`
-	Payload   string     `json:"payload"`
-	Filename  string     `json:"filename"`
-	Line      int        `json:"line"`
-	Timestamp time.Time  `json:"timestamp"`
+	Level       EventLevel `json:"level" xml:"called"`
+	LevelString string     `json:"levelString" xml:"called"`
+	Facility    string     `json:"facility" xml:"called"`
+	Payload     string     `json:"payload" xml:"called"`
+	Filename    string     `json:"filename" xml:"called"`
+	Line        int        `json:"line" xml:"called"`
+	Called      string     `json:"called" xml:"called"`
+	Timestamp   time.Time  `json:"timestamp" xml:"called"`
+}
+
+func (e *Event) prepare() {
+	e.LevelString = e.GetLevelString()
+	e.Called = fmt.Sprintf("%s:%v", e.Filename, e.Line)
 }
 
 //Ago returns how long ago does the event was fired
@@ -72,18 +83,44 @@ func (e *Event) GetLevelString() (ret string) {
 	return
 }
 
-//String returns string representation of event without caller information
-func (e *Event) String() string {
-	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
+//StringWithCaller returns string representation of an event with information where it was called in code and exactly when (to milliseconds)
+func (e *Event) StringWithCaller() string {
+	return fmt.Sprintf("%s %s %s <File: %s:%v>: %s", e.Timestamp.Format(EventDateFormatMilli), e.Facility, e.GetLevelString(), e.Filename, e.Line, e.Payload)
 }
 
-//StringWithCaller returns string representation of an event with information where it was called in code
-func (e *Event) StringWithCaller() string {
-	return fmt.Sprintf("%s %s %s <File: %s Line:%v>: %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Filename, e.Line, e.Payload)
+//String returns string representation of event. If even is of LevelDebug and LevelSilly, it has caller information where it was called in code
+func (e *Event) String() string {
+	if e.Level >= LevelDebug {
+		return e.StringWithCaller()
+	}
+	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
 }
 
 //ToJSON returns json representation of event
 func (e *Event) ToJSON() (ret []byte) {
+	e.prepare()
 	ret, _ = json.Marshal(e)
+	return
+}
+
+//ToXML returns json representation of event
+func (e *Event) ToXML() (ret []byte) {
+	e.prepare()
+	ret, _ = xml.Marshal(e)
+	return
+}
+
+//ToIndentedJSON returns pretty formated json representation of event
+func (e *Event) ToIndentedJSON() (ret []byte) {
+	e.prepare()
+	ret, _ = json.MarshalIndent(e, " ", "  ")
+	return
+
+}
+
+//ToIndentedXML returns pretty formated XML representation of event
+func (e *Event) ToIndentedXML() (ret []byte) {
+	e.prepare()
+	ret, _ = xml.MarshalIndent(e, " ", "  ")
 	return
 }

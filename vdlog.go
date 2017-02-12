@@ -37,7 +37,7 @@ func init() {
 //log is an internal function used for making event objects and sending them to spine channel
 func log(level EventLevel, facility, format string, data ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
-	spine <- Event{
+	evnt := Event{
 		Level:     level,
 		Facility:  facility,
 		Timestamp: time.Now(),
@@ -45,6 +45,8 @@ func log(level EventLevel, facility, format string, data ...interface{}) {
 		Line:      line,
 		Payload:   fmt.Sprintf(format, data...),
 	}
+	evnt.prepare()
+	spine <- evnt
 }
 
 //AddSink allows to add custom events' sink by defined event processing function

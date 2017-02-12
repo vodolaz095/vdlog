@@ -28,7 +28,7 @@ func customLogger(e Event) error {
 
 func TestCustomLoggerSync(t *testing.T) {
 	for i := 0; i < 100; i++ {
-		Info("custom", "CustomLogIteration %v", i)
+		Infof("custom", "CustomLogIteration %v", i)
 	}
 	time.Sleep(2 * time.Second)
 	eventsCreated := len(eventsLogDrain)
@@ -45,7 +45,7 @@ func TestCustomLoggerSync(t *testing.T) {
 func TestCustomLoggerAsync(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		go func(a int) {
-			Info("custom", "CustomLogIteration %v", a)
+			Infof("custom", "CustomLogIteration %v", a)
 		}(i)
 	}
 	time.Sleep(2 * time.Second)

@@ -8,13 +8,22 @@ import (
 func TestLog(t *testing.T) {
 	SetConsoleVerbosity(LevelSilly)
 
-	Silly("testFacility", "testing %s", "test")
-	Verbose("testFacility", "testing %s", "test")
-	Debug("testFacility", "testing %s", "test")
-	Info("testFacility", "testing %s", "test")
-	Warn("testFacility", "testing %s", "test")
-	Error("testFacility", "testing %s", "test")
-	Error("testFacility", "Simple string")
+	Silly("testFacility", "testing", "Silly", 1, 2, 3)
+	Sillyf("testFacility", "testing %s", "Sillyf")
+
+	Verbose("testFacility", "testing", "Verbose", 1, 2, 3)
+	Verbosef("testFacility", "testing %s", "Verbosef")
+
+	Debug("testFacility", "testing", "Debug", 1, 2, 3)
+	Debugf("testFacility", "testing %s", "Debugf")
+
+	Info("testFacility", "testing", "info", 1, 2, 3)
+	Infof("testFacility", "testing %s", "Infof")
+
+	Warn("testFacility", "testing", "warn", 1, 2, 3)
+	Warnf("testFacility", "testing %s", "Warn")
+
+	Error("testFacility", "testing", "Error", 1, 2, 3)
 
 	time.Sleep(100 * time.Millisecond)
 }

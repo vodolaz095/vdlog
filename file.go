@@ -19,7 +19,7 @@ func generateFileSink(filename string, minLevel, maxLevel EventLevel) func(e Eve
 			return err
 		}
 		defer file.Close()
-		_, err = fmt.Fprintf(file, "%s %s %s : %s\n", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
+		_, err = fmt.Fprintln(file, e.String())
 		return err
 	}
 }
