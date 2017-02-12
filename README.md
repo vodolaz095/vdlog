@@ -7,8 +7,17 @@ vdlog
 
 Modular, simple, NodeJS Winston inspired logger for golang
 
+Installing
+======================
 
-Full example of usage 
+```shell
+
+   go get gopkg.in/vodolaz095/vdlog.v1
+
+```
+
+
+Full example of usage (v1)
 ======================
 
 ```go
