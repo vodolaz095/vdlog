@@ -2,6 +2,7 @@ package vdlog
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"time"
@@ -34,8 +35,8 @@ func init() {
 	}()
 }
 
-//log is an internal function used for making event objects and sending them to spine channel
-func log(level EventLevel, facility, format string, data ...interface{}) {
+//vdlogEntryPoint is an internal function used for making event objects and sending them to spine channel
+func vdlogEntryPoint(level EventLevel, facility, format string, data ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
 	evnt := Event{
 		Level:     level,
@@ -56,3 +57,20 @@ func AddSink(name string, sink func(e Event) error) {
 
 //BrokenSinkReporter is a function being called when any of sinks is broken
 var BrokenSinkReporter func(brokenSinkName string, eventThatCloggedIt Event, errorRecievedFromSink error)
+
+//IoWriterSink is a struct that implements io.Writer for usage for https://godoc.org/log#SetOutput with Level and Facility defined
+type IoWriterSink struct {
+	Level    EventLevel
+	Facility string
+}
+
+//Write just sends any slice of bytes as payload of new event
+func (i IoWriterSink) Write(p []byte) (n int, err error) {
+	vdlogEntryPoint(i.Level, i.Facility, "%s", string(p))
+	return len(p), nil
+}
+
+//CreateIoWriter creates io.Writer struct with level and facility defined to be used with https://godoc.org/log#SetOutput
+func CreateIoWriter(level EventLevel, facility string) io.Writer {
+	return IoWriterSink{level, facility}
+}

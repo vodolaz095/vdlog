@@ -2,6 +2,8 @@ package vdlog
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"testing"
 	"time"
 )
@@ -19,9 +21,12 @@ func TestGlobalLog(t *testing.T) {
 	Debugf("test", "debug %s", "debug")
 	Sillyf("test", "silly %s", "silly")
 
+	log.SetOutput(CreateIoWriter(LevelError, "test"))
+	log.Printf("testing %s", "ioWriterLog")
+
 	time.Sleep(100 * time.Millisecond)
 
-	if len(evnt) != 6 {
+	if len(evnt) != 7 {
 		t.Errorf("Wrong number of events emitted - %v instead of %v", len(evnt), 6)
 	}
 
@@ -44,6 +49,11 @@ func TestGlobalLog(t *testing.T) {
 	if evnt[5].Level != LevelSilly || evnt[5].Payload != "silly silly" || evnt[5].Facility != "test" {
 		t.Error("Wrong Error message")
 	}
+	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Payload, "testing ioWriterLog") || evnt[5].Facility != "test" {
+		fmt.Println(evnt[6].Payload)
+		t.Error("Wrong Error message")
+	}
+
 }
 
 func TestLoggerLog(t *testing.T) {
@@ -192,6 +202,12 @@ func Example() {
 	feedbackLogger.Warnf("testing %s", "test")
 	feedbackLogger.Errorf("testing %s", "test")
 	feedbackLogger.Error("Simple string")
+
+	/*
+	 * Using popular https://godoc.org/log package
+	 */
+	log.SetOutput(CreateIoWriter(LevelError, "test"))
+	log.Printf("testing %s", "ioWriterLog")
 
 	//wait until all events are processed
 	time.Sleep(100 * time.Millisecond)

@@ -126,6 +126,13 @@ Full example of usage
 		feedbackLogger.Errorf("testing %s", "test")
 		feedbackLogger.Error("Simple string")
 
+		/*
+		 * Using popular https://godoc.org/log package
+		 */
+		log.SetOutput(CreateIoWriter(LevelError, "test"))
+		log.Printf("testing %s", "ioWriterLog")
+
+
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)
 	}
