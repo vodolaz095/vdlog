@@ -23,11 +23,12 @@ func TestGlobalLog(t *testing.T) {
 
 	log.SetOutput(CreateIoWriter(LevelError, "test"))
 	log.Printf("testing %s", "ioWriterLog")
-
+	log.SetPrefix("kuku ")
+	log.Printf("testing %s", "ioWriterLog")
 	time.Sleep(100 * time.Millisecond)
 
-	if len(evnt) != 7 {
-		t.Errorf("Wrong number of events emitted - %v instead of %v", len(evnt), 6)
+	if len(evnt) != 8 {
+		t.Errorf("Wrong number of events emitted - %v instead of 8", len(evnt))
 	}
 
 	if evnt[0].Level != LevelError || evnt[0].Payload != "error error" || evnt[0].Facility != "test" {
@@ -49,8 +50,14 @@ func TestGlobalLog(t *testing.T) {
 	if evnt[5].Level != LevelSilly || evnt[5].Payload != "silly silly" || evnt[5].Facility != "test" {
 		t.Error("Wrong Error message")
 	}
-	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Payload, "testing ioWriterLog") || evnt[5].Facility != "test" {
+
+	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Payload, "testing ioWriterLog") || evnt[6].Facility != "test" {
 		fmt.Println(evnt[6].Payload)
+		t.Error("Wrong Error message")
+	}
+
+	if evnt[7].Level != LevelError || !strings.Contains(evnt[7].Payload, "kuku testing ioWriterLog") || evnt[7].Facility != "test" {
+		fmt.Println(evnt[7].Payload)
 		t.Error("Wrong Error message")
 	}
 

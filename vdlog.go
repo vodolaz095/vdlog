@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"runtime"
 	"time"
 )
@@ -64,10 +65,13 @@ type IoWriterSink struct {
 	Facility string
 }
 
-//Write just sends any slice of bytes as payload of new event
+//Write just sends any slice of bytes as payload of new event with prepending timestamp removed
 func (i IoWriterSink) Write(p []byte) (n int, err error) {
+	n = len(p)
+	r, err := regexp.Compile(`\d{4}(\/\d\d){2}\s\d{1,2}\:\d{1,2}\:\d{1,2}\s`)
+	p = r.ReplaceAll(p, []byte(""))
 	vdlogEntryPoint(i.Level, i.Facility, "%s", string(p))
-	return len(p), nil
+	return
 }
 
 //CreateIoWriter creates io.Writer struct with level and facility defined to be used with https://godoc.org/log#SetOutput
