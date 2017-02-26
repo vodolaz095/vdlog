@@ -38,7 +38,7 @@ func consoleSink(e Event) error {
 	case LevelError:
 		return nil
 	}
-	_, err := fmt.Fprintf(os.Stdout, "%s\n", e.String())
+	_, err := fmt.Fprintf(os.Stderr, "%s\n", e.String())
 	color.Unset()
 	return err
 }
@@ -48,7 +48,7 @@ func consoleErrorSink(e Event) error {
 		return nil
 	}
 	color.Set(color.FgRed)
-	_, err := fmt.Fprintf(os.Stdout, "%s\n", e.String())
+	_, err := fmt.Fprintf(os.Stderr, "%s\n", e.String())
 	color.Unset()
 	return err
 }
