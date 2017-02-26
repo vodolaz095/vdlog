@@ -132,6 +132,16 @@ Full example of usage
 		log.SetOutput(CreateIoWriter(LevelError, "test"))
 		log.Printf("testing %s", "ioWriterLog")
 
+		/*
+		 * Logging to Journalctl on local server (works only in linux!)
+		 */
+		vdlog.LogToLocalJournald()
+
+		/*
+		 * Logging to Journalctl on remote server (works only in linux!)
+		 */
+		vdlog.LogToRemoteJournaldViaTCP("logger.example.org", 514)
+		vdlog.LogToRemoteJournaldViaUDP("logger.example.org", 514)
 
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)

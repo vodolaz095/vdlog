@@ -1,3 +1,5 @@
+// +build linux
+
 package vdlog
 
 import (
@@ -11,9 +13,12 @@ func TestJournaldSink(t *testing.T) {
 		Payload:   "Hello from vdlog",
 		Facility:  "vdlogUnitTest",
 		Timestamp: time.Now(),
+		Line:      2,
+		Filename:  "/var/www/localhost/index.php",
 	}
 
-	err := journaldSink(evnt)
+	localJournaldSink := createJournaldSink("localhost", 514, true, true)
+	err := localJournaldSink(evnt)
 	if err != nil {
 		t.Error(err)
 	}
