@@ -88,12 +88,17 @@ func (e *Event) StringWithCaller() string {
 	return fmt.Sprintf("%s %s %s <File: %s:%v>: %s", e.Timestamp.Format(EventDateFormatMilli), e.Facility, e.GetLevelString(), e.Filename, e.Line, e.Payload)
 }
 
+//StringWithoutCaller returns string representation of an event without information where it was called in code and exactly when (to milliseconds)
+func (e *Event) StringWithoutCaller() string {
+	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
+}
+
 //String returns string representation of event. If even is of LevelDebug and LevelSilly, it has caller information where it was called in code
 func (e *Event) String() string {
 	if e.Level >= LevelDebug {
 		return e.StringWithCaller()
 	}
-	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
+	return e.StringWithoutCaller()
 }
 
 //ToJSON returns json representation of event
