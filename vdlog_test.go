@@ -138,7 +138,7 @@ func Example() {
 	/*
 	 * Logging to Loggly.com
 	 */
-	LogToLoggly("{YOU LOGGLY TOKEN PLS}", true) //true = https, false = http
+	LogToLoggly("{YOUR LOGGLY TOKEN PLS}", true) //true = https, false = http
 
 	/*
 	 * Add custom sink for storing events

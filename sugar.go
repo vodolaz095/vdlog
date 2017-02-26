@@ -16,22 +16,22 @@ func Sillyf(facility string, format string, data ...interface{}) {
 	vdlogEntryPoint(LevelSilly, facility, format, data...)
 }
 
-//Debug makes Logger emit Event with LevelVerbose priority
+//Debug makes Logger emit Event with LevelDebug priority
 func Debug(facility string, data ...interface{}) {
 	vdlogEntryPoint(LevelDebug, facility, fmt.Sprint(data...))
 }
 
-//Debugf makes Logger emit Event with LevelVerbose priority with defined format
+//Debugf makes Logger emit Event with LevelDebug priority with defined format
 func Debugf(facility string, format string, data ...interface{}) {
 	vdlogEntryPoint(LevelDebug, facility, format, data...)
 }
 
-//Verbose makes Logger emit Event with LevelDebug priority
+//Verbose makes Logger emit Event with LevelVerbose priority
 func Verbose(facility string, data ...interface{}) {
 	vdlogEntryPoint(LevelVerbose, facility, fmt.Sprint(data...))
 }
 
-//Verbosef makes Logger emit Event with LevelDebug priority
+//Verbosef makes Logger emit Event with LevelVerbose priority with defined format
 func Verbosef(facility string, format string, data ...interface{}) {
 	vdlogEntryPoint(LevelVerbose, facility, format, data...)
 }

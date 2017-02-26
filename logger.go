@@ -19,22 +19,22 @@ func (l *Logger) Sillyf(format string, data ...interface{}) {
 	vdlogEntryPoint(LevelSilly, l.Facility, format, data...)
 }
 
-//Debug makes Logger emit Event with LevelVerbose priority
+//Debug makes Logger emit Event with LevelDebug priority
 func (l *Logger) Debug(data ...interface{}) {
 	vdlogEntryPoint(LevelDebug, l.Facility, fmt.Sprint(data...))
 }
 
-//Debugf makes Logger emit Event with LevelVerbose priority with defined format
+//Debugf makes Logger emit Event with LevelDebug priority with defined format
 func (l *Logger) Debugf(format string, data ...interface{}) {
 	vdlogEntryPoint(LevelDebug, l.Facility, format, data...)
 }
 
-//Verbose makes Logger emit Event with LevelDebug priority
+//Verbose makes Logger emit Event with LevelVerbose priority
 func (l *Logger) Verbose(data ...interface{}) {
 	vdlogEntryPoint(LevelVerbose, l.Facility, fmt.Sprint(data...))
 }
 
-//Verbosef makes Logger emit Event with LevelDebug priority
+//Verbosef makes Logger emit Event with LevelVerbose priority
 func (l *Logger) Verbosef(format string, data ...interface{}) {
 	vdlogEntryPoint(LevelVerbose, l.Facility, format, data...)
 }
