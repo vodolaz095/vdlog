@@ -1,0 +1,35 @@
+package vdlog
+
+//https://github.com/segmentio/go-loggly/blob/master/loggly.go
+
+import (
+	"bytes"
+	"fmt"
+	"net/http"
+)
+
+//const logglyURL = "logs-01.loggly.com/inputs/TOKEN/tag/http/"
+
+func createLogglySync(token string, secure bool) func(e Event) error {
+	return func(e Event) error {
+		var logglyURL string
+		if secure {
+			logglyURL = fmt.Sprintf("https://logs-01.loggly.com/inputs/%s/tag/http", token)
+		} else {
+			logglyURL = fmt.Sprintf("http://logs-01.loggly.com/inputs/%s/tag/http", token)
+		}
+
+		body := bytes.NewBuffer(e.ToJSON())
+		resp, err := http.Post(logglyURL, "application/json; charset=utf-8", body)
+		defer resp.Body.Close()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+//LogToLoggly allows to send messages to Loggly.com, if secure is true, https is used, which can increase security but reduce bandwitdh
+func LogToLoggly(token string, secure bool) {
+	AddSink("loggly", createLogglySync(token, secure))
+}

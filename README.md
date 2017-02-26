@@ -7,12 +7,94 @@ vdlog
 
 Modular, simple, NodeJS Winston inspired logger for golang
 
+Log storage support
+======================
+
+From the box - STDERR, local file, [Journald](https://wiki.archlinux.org/index.php/Systemd), 
+[Loggly](https://loggly.com). 
+
+With little effort - anything.
+You just need to implement simple function that will process events
+
+```go
+
+		vdlog.AddSink("feedback", func(e vdlog.Event) error {
+			fmt.Println("Feedback", e.String)
+		})
+
+
+```
+
+How does logged events looks like (in JSON format)?
+======================
+
+```javascript
+
+    {
+      //unique UUID of event, the same reported to all sinks
+      "uuid": "990d28fd-4461-480a-be7e-08abacc9bdeb",
+
+
+      "timestamp": "2017-02-26T19:45:13.398512249+03:00",
+
+
+      "level": 2,
+      "levelString": "INFO",
+
+
+      "facility": "vdlogUnitTest",
+
+      "payload": "Hello from vdlog",
+
+      "hostname":"server.local",
+	
+      //Process ID
+      "pid": 11337,
+
+      //Where does the logger function was actually called
+      "filename": "/var/www/localhost/index.php",
+      "line": 2,
+      "called": "/var/www/localhost/index.php:2"
+    }
+
+```
+
 Installing
 ======================
 
 ```shell
 
    go get gopkg.in/vodolaz095/vdlog.v2
+
+```
+
+Basic example
+======================
+
+```go
+
+	package main
+
+	import (
+		"time"
+		"gopkg.in/vodolaz095/vdlog.v2"
+	)
+
+	func main(){
+		vdlog.SetConsoleVerbosity(LevelSilly)
+
+		vdlog.Sillyf("testFacility", "testing %s", "test")
+		vdlog.Verbosef("testFacility", "testing %s", "test")
+		vdlog.Debugf("testFacility", "testing %s", "test")
+		vdlog.Infof("testFacility", "testing %s", "test")
+		vdlog.Warnf("testFacility", "testing %s", "test")
+		vdlog.Errorf("testFacility", "testing %s", "test")
+		vdlog.Error("testFacility", "Simple string")
+
+		//wait until all events are processed
+		time.Sleep(100*time.Millisecond)
+	}
+
 
 ```
 
@@ -42,12 +124,33 @@ Full example of usage
 		/*
 		 * Enable output to local file
 		 */
+
 		//LogErrorsToFile outputs errors only
 		vdlog.LogErrorsToFile("/var/log/my_vdlog_errors.log")
+
 		//LogNormalToFile outputs events from error to debug levels
 		vdlog.LogNormalToFile("/var/log/my_vdlog.log")
+
 		//We can log defined level ranges to file
 		vdlog.LogToFile("/var/log/onlyInfoAndWarn.log", vdlog.LevelWarn, vdlog.LevelInfo)
+
+
+		/*
+		 * Logging to Journalctl on local server (works only in linux!)
+		 */
+		vdlog.LogToLocalJournald()
+
+		/*
+		 * Logging to Journalctl on remote server (works only in linux!)
+		 */
+		vdlog.LogToRemoteJournaldViaTCP("logger.example.org", 514)
+		vdlog.LogToRemoteJournaldViaUDP("logger.example.org", 514)
+
+		/*
+		 * Logging to Loggly.com
+		 */
+		vdlog.LogToLoggly("{YOU LOGGLY TOKEN PLS}", true) //true = https, false = http
+
 	
 		/*
 		 * Add custom sink for storing events
@@ -131,17 +234,6 @@ Full example of usage
 		 */
 		log.SetOutput(CreateIoWriter(LevelError, "test"))
 		log.Printf("testing %s", "ioWriterLog")
-
-		/*
-		 * Logging to Journalctl on local server (works only in linux!)
-		 */
-		vdlog.LogToLocalJournald()
-
-		/*
-		 * Logging to Journalctl on remote server (works only in linux!)
-		 */
-		vdlog.LogToRemoteJournaldViaTCP("logger.example.org", 514)
-		vdlog.LogToRemoteJournaldViaUDP("logger.example.org", 514)
 
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)

@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"os"
 	"time"
+
+	"github.com/satori/go.uuid"
 )
 
 //EventLevel is a type describing event's level
@@ -38,6 +41,7 @@ const (
 
 //Event represents anything to be logged
 type Event struct {
+	UUID        string     `json:"uuid" xml:"uuid"`
 	Level       EventLevel `json:"level" xml:"called"`
 	LevelString string     `json:"levelString" xml:"called"`
 	Facility    string     `json:"facility" xml:"called"`
@@ -45,10 +49,16 @@ type Event struct {
 	Filename    string     `json:"filename" xml:"called"`
 	Line        int        `json:"line" xml:"called"`
 	Called      string     `json:"called" xml:"called"`
+	Hostname    string     `json:"hostname" xml:"hostname"`
+	Pid         int        `json:"pid" xml:"pid"`
 	Timestamp   time.Time  `json:"timestamp" xml:"called"`
 }
 
 func (e *Event) prepare() {
+	e.UUID = uuid.NewV4().String()
+	e.Pid = os.Getpid()
+	hostname, _ := os.Hostname()
+	e.Hostname = hostname
 	e.LevelString = e.GetLevelString()
 	e.Called = fmt.Sprintf("%s:%v", e.Filename, e.Line)
 }
@@ -103,21 +113,18 @@ func (e *Event) String() string {
 
 //ToJSON returns json representation of event
 func (e *Event) ToJSON() (ret []byte) {
-	e.prepare()
 	ret, _ = json.Marshal(e)
 	return
 }
 
 //ToXML returns json representation of event
 func (e *Event) ToXML() (ret []byte) {
-	e.prepare()
 	ret, _ = xml.Marshal(e)
 	return
 }
 
 //ToIndentedJSON returns pretty formated json representation of event
 func (e *Event) ToIndentedJSON() (ret []byte) {
-	e.prepare()
 	ret, _ = json.MarshalIndent(e, " ", "  ")
 	return
 
@@ -125,7 +132,6 @@ func (e *Event) ToIndentedJSON() (ret []byte) {
 
 //ToIndentedXML returns pretty formated XML representation of event
 func (e *Event) ToIndentedXML() (ret []byte) {
-	e.prepare()
 	ret, _ = xml.MarshalIndent(e, " ", "  ")
 	return
 }

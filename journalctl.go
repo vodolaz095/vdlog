@@ -4,10 +4,7 @@ package vdlog
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
-
-	"github.com/satori/go.uuid"
 )
 
 // Mapping between journalctl and vdlog levels
@@ -24,7 +21,6 @@ import (
 
 func createJournaldSink(host string, port int, tcp, local bool) func(e Event) error {
 	return func(e Event) error {
-		e.prepare()
 		var journaldPriority int
 		switch e.Level {
 		case LevelError:
@@ -67,14 +63,14 @@ func createJournaldSink(host string, port int, tcp, local bool) func(e Event) er
 			return err
 		}
 		//http://man7.org/linux/man-pages/man7/systemd.journal-fields.7.html
-		fmt.Fprintf(stdin, "MESSAGE_ID=%s\n", uuid.NewV4().String())
+		fmt.Fprintf(stdin, "MESSAGE_ID=%s\n", e.UUID)
 		fmt.Fprintf(stdin, "CODE_FILE=%s\n", e.Filename)
 		fmt.Fprintf(stdin, "CODE_LINE=%v\n", e.Line)
 		fmt.Fprintf(stdin, "SYSLOG_IDENTIFIER=%s\n", e.Facility)
 		fmt.Fprintf(stdin, "MESSAGE=%q\n", e.Payload)
 		fmt.Fprintf(stdin, "PRIORITY=%d\n", journaldPriority)
-		fmt.Fprintf(stdin, "SYSLOG_PID=%d\n", os.Getpid())
-		fmt.Fprintf(stdin, "OBJECT_PID=%d\n", os.Getpid())
+		fmt.Fprintf(stdin, "SYSLOG_PID=%d\n", e.Pid)
+		fmt.Fprintf(stdin, "OBJECT_PID=%d\n", e.Pid)
 		fmt.Fprintf(stdin, "VDLOG_LEVEL=%s\n", e.LevelString)
 		fmt.Fprintf(stdin, "VDLOG_CALLED=%s\n", e.Called)
 		err = stdin.Close()

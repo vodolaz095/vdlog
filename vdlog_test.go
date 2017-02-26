@@ -124,6 +124,21 @@ func Example() {
 	LogNormalToFile("/var/log/my_log")
 	//We can log defined level ranges to file
 	LogToFile("/var/log/onlyInfoAndWarn.log", LevelWarn, LevelInfo)
+	/*
+	 * Logging to Journalctl on local server (works only in linux!)
+	 */
+	LogToLocalJournald()
+
+	/*
+	 * Logging to Journalctl on remote server (works only in linux!)
+	 */
+	LogToRemoteJournaldViaTCP("logger.example.org", 514)
+	LogToRemoteJournaldViaUDP("logger.example.org", 514)
+
+	/*
+	 * Logging to Loggly.com
+	 */
+	LogToLoggly("{YOU LOGGLY TOKEN PLS}", true) //true = https, false = http
 
 	/*
 	 * Add custom sink for storing events
@@ -215,17 +230,6 @@ func Example() {
 	 */
 	log.SetOutput(CreateIoWriter(LevelError, "test"))
 	log.Printf("testing %s", "ioWriterLog")
-
-	/*
-	 * Logging to Journalctl on local server (works only in linux!)
-	 */
-	LogToLocalJournald()
-
-	/*
-	 * Logging to Journalctl on remote server (works only in linux!)
-	 */
-	LogToRemoteJournaldViaTCP("logger.example.org", 514)
-	LogToRemoteJournaldViaUDP("logger.example.org", 514)
 
 	//wait until all events are processed
 	time.Sleep(100 * time.Millisecond)
