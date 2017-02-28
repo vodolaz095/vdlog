@@ -26,7 +26,7 @@ func TestJournaldSink(t *testing.T) {
 	}
 
 	localJournaldSink := createJournaldSink("localhost", 514, true, true)
-	err := localJournaldSink(evnt)
+	err = localJournaldSink(evnt)
 	if err != nil {
 		t.Error(err)
 	}
