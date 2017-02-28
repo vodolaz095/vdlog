@@ -3,11 +3,19 @@
 package vdlog
 
 import (
+	"os"
 	"testing"
 	"time"
 )
 
 func TestJournaldSink(t *testing.T) {
+	_, err:= os.Stat("/bin/logger")
+
+	if os.IsNotExist(err) {
+		t.Skip("unable to find /bin/logger binary - cannot perform the test")
+	}
+
+
 	evnt := Event{
 		Level:     LevelInfo,
 		Payload:   "Hello from vdlog",
