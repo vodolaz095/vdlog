@@ -29,7 +29,7 @@ func createLogglySync(token string, secure bool) func(e Event) error {
 	}
 }
 
-//LogToLoggly allows to send messages to Loggly.com, if secure is true, https is used, which can increase security but reduce bandwitdh
+//LogToLoggly allows to send messages to Loggly.com, if secure is true, https is used, which can increase security but reduce bandwidth
 func LogToLoggly(token string, secure bool) {
 	AddSink("loggly", createLogglySync(token, secure))
 }
