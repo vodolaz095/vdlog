@@ -79,6 +79,12 @@ func (e *Event) prepare() {
 	e.Called = fmt.Sprintf("%s:%v", e.Filename, e.Line)
 }
 
+//Emit makes event send itself into spine
+func (e *Event) Emit() {
+	e.prepare()
+	spine <- *e
+}
+
 //Ago returns how long ago does the event was fired
 func (e *Event) Ago() time.Duration {
 	return time.Since(e.Timestamp)

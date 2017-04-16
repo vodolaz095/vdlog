@@ -25,5 +25,11 @@ func TestLog(t *testing.T) {
 
 	Error("testFacility", "testing", "Error", 1, 2, 3)
 
+	var evnt Event
+	evnt.Level = LevelInfo
+	evnt.Facility = "testFacility"
+	evnt.Payload = "testing"
+	evnt.Emit()
+
 	time.Sleep(100 * time.Millisecond)
 }
