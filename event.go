@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/satori/go.uuid"
@@ -42,16 +43,31 @@ const (
 //Event represents anything to be logged
 type Event struct {
 	UUID        string     `json:"uuid" xml:"uuid"`
-	Level       EventLevel `json:"level" xml:"called"`
-	LevelString string     `json:"levelString" xml:"called"`
-	Facility    string     `json:"facility" xml:"called"`
-	Payload     string     `json:"payload" xml:"called"`
-	Filename    string     `json:"filename" xml:"called"`
-	Line        int        `json:"line" xml:"called"`
+	Level       EventLevel `json:"level" xml:"level"`
+	LevelString string     `json:"levelString" xml:"levelString"`
+	Facility    string     `json:"facility" xml:"facility"`
+	Payload     string     `json:"payload" xml:"payload"`
+	Filename    string     `json:"filename" xml:"filename"`
+	Line        int        `json:"line" xml:"line"`
 	Called      string     `json:"called" xml:"called"`
 	Hostname    string     `json:"hostname" xml:"hostname"`
 	Pid         int        `json:"pid" xml:"pid"`
-	Timestamp   time.Time  `json:"timestamp" xml:"called"`
+	Timestamp   time.Time  `json:"timestamp" xml:"timestamp"`
+}
+
+//vdlogEntryPoint is an internal function used for making event objects and sending them to spine channel
+func vdlogEntryPoint(level EventLevel, facility, format string, data ...interface{}) {
+	_, file, line, _ := runtime.Caller(2)
+	evnt := Event{
+		Level:     level,
+		Facility:  facility,
+		Timestamp: time.Now(),
+		Filename:  file,
+		Line:      line,
+		Payload:   fmt.Sprintf(format, data...),
+	}
+	evnt.prepare()
+	spine <- evnt
 }
 
 func (e *Event) prepare() {

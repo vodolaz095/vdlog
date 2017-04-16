@@ -5,8 +5,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"runtime"
-	"time"
 )
 
 var spine chan Event
@@ -34,21 +32,6 @@ func init() {
 			}
 		}
 	}()
-}
-
-//vdlogEntryPoint is an internal function used for making event objects and sending them to spine channel
-func vdlogEntryPoint(level EventLevel, facility, format string, data ...interface{}) {
-	_, file, line, _ := runtime.Caller(2)
-	evnt := Event{
-		Level:     level,
-		Facility:  facility,
-		Timestamp: time.Now(),
-		Filename:  file,
-		Line:      line,
-		Payload:   fmt.Sprintf(format, data...),
-	}
-	evnt.prepare()
-	spine <- evnt
 }
 
 //AddSink allows to add custom events' sink by defined event processing function
