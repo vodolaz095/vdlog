@@ -24,6 +24,7 @@ func TestJournaldSink(t *testing.T) {
 		Line:      2,
 		Filename:  "/var/www/localhost/index.php",
 	}
+	evnt.prepare()
 
 	localJournaldSink := createJournaldSink("localhost", 514, true, true)
 	err = localJournaldSink(evnt)
