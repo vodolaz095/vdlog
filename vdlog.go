@@ -40,7 +40,7 @@ func AddSink(name string, sink func(e Event) error) {
 }
 
 //BrokenSinkReporter is a function being called when any of sinks is broken
-var BrokenSinkReporter func(brokenSinkName string, eventThatCloggedIt Event, errorRecievedFromSink error)
+var BrokenSinkReporter func(brokenSinkName string, eventThatCloggedIt Event, errorReceivedFromSink error)
 
 //IoWriterSink is a struct that implements io.Writer for usage for https://godoc.org/log#SetOutput with Level and Facility defined
 type IoWriterSink struct {

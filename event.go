@@ -81,6 +81,9 @@ func (e *Event) prepare() {
 
 //Emit makes event send itself into spine
 func (e *Event) Emit() {
+	_, file, line, _ := runtime.Caller(2)
+	e.Filename = file
+	e.Line = line
 	e.prepare()
 	spine <- *e
 }
