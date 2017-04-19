@@ -14,12 +14,12 @@ func TestGlobalLog(t *testing.T) {
 		evnt = append(evnt, e)
 		return nil
 	})
-	Error("test", "error ", "error")
-	Warnf("test", "warn %s", "warn")
-	Infof("test", "info %s", "info")
-	Verbosef("test", "verbose %s", "verbose")
-	Debugf("test", "debug %s", "debug")
-	Sillyf("test", "silly %s", "silly")
+	EmitError("test", fmt.Errorf("test %s", "error"), H{"error": "error"})
+	EmitWarn("test", H{"warn": "warn"})
+	EmitInfo("test", H{"info": "info"})
+	EmitVerbose("test", H{"verbose": "verbose"})
+	EmitDebug("test", H{"debug": "debug"})
+	EmitSilly("test", H{"silly": "silly"})
 
 	log.SetOutput(CreateIoWriter(LevelError, "test"))
 	log.Printf("testing %s", "ioWriterLog")
@@ -31,36 +31,35 @@ func TestGlobalLog(t *testing.T) {
 		t.Errorf("Wrong number of events emitted - %v instead of 8", len(evnt))
 	}
 
-	if evnt[0].Level != LevelError || evnt[0].Payload != "error error" || evnt[0].Facility != "test" {
+	if evnt[0].Level != LevelError || evnt[0].Error.Error() != "test error" || evnt[0].Type != "test" {
 		t.Error("Wrong Error behavior")
 	}
 
-	if evnt[1].Level != LevelWarn || evnt[1].Payload != "warn warn" || evnt[1].Facility != "test" {
+	if evnt[1].Level != LevelWarn || (evnt[1].Metadata["warn"]).(string) != "warn" || evnt[1].Type != "test" {
 		t.Error("Wrong Warn behavior")
 	}
-	if evnt[2].Level != LevelInfo || evnt[2].Payload != "info info" || evnt[2].Facility != "test" {
+	if evnt[2].Level != LevelInfo || (evnt[2].Metadata["info"]).(string) != "info" || evnt[2].Type != "test" {
 		t.Error("Wrong Info behavior")
 	}
-	if evnt[3].Level != LevelVerbose || evnt[3].Payload != "verbose verbose" || evnt[3].Facility != "test" {
+	if evnt[3].Level != LevelVerbose || (evnt[3].Metadata["verbose"]).(string) != "verbose" || evnt[3].Type != "test" {
 		t.Error("Wrong Error message")
 	}
-	if evnt[4].Level != LevelDebug || evnt[4].Payload != "debug debug" || evnt[4].Facility != "test" {
+	if evnt[4].Level != LevelDebug || (evnt[4].Metadata["debug"]).(string) != "debug" || evnt[4].Type != "test" {
 		t.Error("Wrong Error message")
 	}
-	if evnt[5].Level != LevelSilly || evnt[5].Payload != "silly silly" || evnt[5].Facility != "test" {
-		t.Error("Wrong Error message")
-	}
-
-	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Payload, "testing ioWriterLog") || evnt[6].Facility != "test" {
-		fmt.Println(evnt[6].Payload)
+	if evnt[5].Level != LevelSilly || (evnt[5].Metadata["silly"]).(string) != "silly" || evnt[5].Type != "test" {
 		t.Error("Wrong Error message")
 	}
 
-	if evnt[7].Level != LevelError || !strings.Contains(evnt[7].Payload, "kuku testing ioWriterLog") || evnt[7].Facility != "test" {
-		fmt.Println(evnt[7].Payload)
+	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Metadata["message"].(string), "testing ioWriterLog") || evnt[6].Type != "test" {
+		fmt.Println(evnt[6].Metadata)
 		t.Error("Wrong Error message")
 	}
 
+	if evnt[7].Level != LevelError || !strings.Contains(evnt[7].Metadata["message"].(string), "kuku testing ioWriterLog") || evnt[7].Type != "test" {
+		fmt.Println(evnt[7].Metadata)
+		t.Error("Wrong Error message")
+	}
 }
 
 func TestLoggerLog(t *testing.T) {
@@ -71,40 +70,55 @@ func TestLoggerLog(t *testing.T) {
 	})
 
 	logger := New("TestLoggerLog")
-	logger.Errorf("error error") //funny, go vet complains on it :-)
-	logger.Warnf("warn %s", "warn")
-	logger.Infof("info %s", "info")
-	logger.Verbosef("verbose %s", "verbose")
-	logger.Debugf("debug %s", "debug")
-	logger.Silly("silly", " ", "silly")
+	logger.EmitError(fmt.Errorf("test %s", "error"), H{"error": "error"})
+	logger.EmitWarn(H{"warn": "warn"})
+	logger.EmitInfo(H{"info": "info"})
+	logger.EmitVerbose(H{"verbose": "verbose"})
+	logger.EmitDebug(H{"debug": "debug"})
+	logger.EmitSilly(H{"silly": "silly"})
 
+	log.SetOutput(CreateIoWriter(LevelError, "test"))
+	log.Printf("testing %s", "ioWriterLog")
+	log.SetPrefix("kuku ")
+	log.Printf("testing %s", "ioWriterLog")
 	time.Sleep(100 * time.Millisecond)
 
-	if len(evnt) != 6 {
-		t.Errorf("Wrong number of events emitted - %v instead of %v", len(evnt), 6)
+	if len(evnt) != 8 {
+		t.Errorf("Wrong number of events emitted - %v instead of 8", len(evnt))
 	}
 
-	if evnt[0].Level != LevelError || evnt[0].Payload != "error error" || evnt[0].Facility != "TestLoggerLog" {
+	if evnt[0].Level != LevelError || evnt[0].Error.Error() != "test error" || evnt[0].Type != "TestLoggerLog" {
 		t.Error("Wrong Error behavior")
 	}
 
-	if evnt[1].Level != LevelWarn || evnt[1].Payload != "warn warn" || evnt[1].Facility != "TestLoggerLog" {
+	if evnt[1].Level != LevelWarn || (evnt[1].Metadata["warn"]).(string) != "warn" || evnt[1].Type != "TestLoggerLog" {
 		t.Error("Wrong Warn behavior")
 	}
-	if evnt[2].Level != LevelInfo || evnt[2].Payload != "info info" || evnt[2].Facility != "TestLoggerLog" {
+	if evnt[2].Level != LevelInfo || (evnt[2].Metadata["info"]).(string) != "info" || evnt[2].Type != "TestLoggerLog" {
 		t.Error("Wrong Info behavior")
 	}
-	if evnt[3].Level != LevelVerbose || evnt[3].Payload != "verbose verbose" || evnt[3].Facility != "TestLoggerLog" {
-		t.Error("Wrong Verbose message")
+	if evnt[3].Level != LevelVerbose || (evnt[3].Metadata["verbose"]).(string) != "verbose" || evnt[3].Type != "TestLoggerLog" {
+		t.Error("Wrong Error message")
 	}
-	if evnt[4].Level != LevelDebug || evnt[4].Payload != "debug debug" || evnt[4].Facility != "TestLoggerLog" {
-		t.Error("Wrong Debug message")
+	if evnt[4].Level != LevelDebug || (evnt[4].Metadata["debug"]).(string) != "debug" || evnt[4].Type != "TestLoggerLog" {
+		t.Error("Wrong Error message")
 	}
-	if evnt[5].Level != LevelSilly || evnt[5].Payload != "silly silly" || evnt[5].Facility != "TestLoggerLog" {
-		t.Error("Wrong Silly message")
+	if evnt[5].Level != LevelSilly || (evnt[5].Metadata["silly"]).(string) != "silly" || evnt[5].Type != "TestLoggerLog" {
+		t.Error("Wrong Error message")
+	}
+
+	if evnt[6].Level != LevelError || !strings.Contains(evnt[6].Metadata["message"].(string), "testing ioWriterLog") || evnt[6].Type != "test" {
+		fmt.Println(evnt[6].Metadata)
+		t.Error("Wrong Error message")
+	}
+
+	if evnt[7].Level != LevelError || !strings.Contains(evnt[7].Metadata["message"].(string), "kuku testing ioWriterLog") || evnt[7].Type != "test" {
+		fmt.Println(evnt[7].Metadata)
+		t.Error("Wrong Error message")
 	}
 }
 
+//*/
 func Example() {
 	/*
 	 *  Set Console Verbosity level
@@ -148,7 +162,7 @@ func Example() {
 	 */
 	AddSink("feedback", func(e Event) error {
 		// we ignore events not related for feedback facility
-		if e.Facility != "feedback" {
+		if e.Type != "feedback" {
 			return nil
 		}
 		//we ignore events of low priority
@@ -156,7 +170,7 @@ func Example() {
 			return nil
 		}
 		//check if payload is the proper one
-		if e.Payload == "bad" {
+		if e.Metadata["payload"].(string) == "bad" {
 			return fmt.Errorf("bad event")
 		}
 
@@ -206,24 +220,23 @@ func Example() {
 	/*
 	 * Using global logger
 	 */
-	Sillyf("testFacility", "testing %s", "test")
-	Verbosef("testFacility", "testing %s", "test")
-	Debugf("testFacility", "testing %s", "test")
-	Infof("testFacility", "testing %s", "test")
-	Warnf("testFacility", "testing %s", "test")
-	Error("testFacility", "Simple string")
+	EmitError("test", fmt.Errorf("test %s", "error"), H{"error": "error"})
+	EmitWarn("test", H{"warn": "warn"})
+	EmitInfo("test", H{"info": "info"})
+	EmitVerbose("test", H{"verbose": "verbose"})
+	EmitDebug("test", H{"debug": "debug"})
+	EmitSilly("test", H{"silly": "silly"})
 
 	/*
 	 * Using custom logger for `feedback` facility
 	 */
 	feedbackLogger := New("feedback")
-	feedbackLogger.Sillyf("testing %s", "test")
-	feedbackLogger.Verbosef("testing %s", "test")
-	feedbackLogger.Debugf("testing %s", "test")
-	feedbackLogger.Infof("testing %s", "test")
-	feedbackLogger.Warnf("testing %s", "test")
-	feedbackLogger.Errorf("testing %s", "test")
-	feedbackLogger.Error("Simple string")
+	feedbackLogger.EmitError(fmt.Errorf("test %s", "error"), H{"error": "error"})
+	feedbackLogger.EmitWarn(H{"warn": "warn"})
+	feedbackLogger.EmitInfo(H{"info": "info"})
+	feedbackLogger.EmitVerbose(H{"verbose": "verbose"})
+	feedbackLogger.EmitDebug(H{"debug": "debug"})
+	feedbackLogger.EmitSilly(H{"silly": "silly"})
 
 	/*
 	 * Using popular https://godoc.org/log package

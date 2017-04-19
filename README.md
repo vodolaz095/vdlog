@@ -4,7 +4,10 @@ vdlog
 [![GoDoc](https://godoc.org/gopkg.in/vodolaz095/vdlog.v2?status.svg)](https://godoc.org/gopkg.in/vodolaz095/vdlog.v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vodolaz095/vdlog)](https://goreportcard.com/report/github.com/vodolaz095/vdlog)
 
+Structured logger for Go.
 
+Info
+======================
 Package assumes that there are this event levels:
 
 - Error is a level for errors that can wake you on 4 hours past midnight
@@ -20,8 +23,7 @@ Package assumes that there are this event levels:
 - Silly is putting every fart to log.
 
 After events emitted, they are all send to buffered channel called `spine`.
-Than, each event is processed via separate goroutines
-using Sink functions applied to this event.
+Than, each event is processed via separate goroutines using Sink functions applied to this event.
 You can define sink function easily, see the source of `console.go` and `file.go` files.
 If Sink function returns error, it is processed by `BrokenSinkReporter` function.
 
@@ -33,48 +35,66 @@ From the box - STDERR, local file, [Journald](https://wiki.archlinux.org/index.p
 [Loggly](https://loggly.com). 
 
 With little effort - anything.
-You just need to implement simple function that will process events
+You just need to implement simple function that will process events, like this `AddSink` one
 
 ```go
 
+	package main
+
+	import (
+	  "fmt"
+		"time"
+		"gopkg.in/vodolaz095/vdlog.v3"
+	)
+
+	func main(){
 		vdlog.AddSink("feedback", func(e vdlog.Event) error {
-			fmt.Println("Feedback", e.String)
+			fmt.Println("Feedback", e.String())
+			return nil
 		})
 
+		vdlog.Error("testFacility", "Simple string")
+
+		//wait until all events are processed
+		time.Sleep(100*time.Millisecond)
+	}
+
+
+```
 
 ```
 
 How does logged events looks like (in JSON format)?
 ======================
 
-```javascript
+```json
 
-    {
-      //unique UUID of event, the same reported to all sinks
-      "uuid": "990d28fd-4461-480a-be7e-08abacc9bdeb",
-
-
-      "timestamp": "2017-02-26T19:45:13.398512249+03:00",
-
-
-      "level": 2,
-      "levelString": "INFO",
-
-
-      "facility": "vdlogUnitTest",
-
-      "payload": "Hello from vdlog",
-
-      "hostname":"server.local",
-	
-      //Process ID
-      "pid": 11337,
-
-      //Where does the logger function was actually called
-      "filename": "/var/www/localhost/index.php",
-      "line": 2,
-      "called": "/var/www/localhost/index.php:2"
-    }
+      {
+        //unique UUID of event, the same reported to all sinks
+        "uuid": "990d28fd-4461-480a-be7e-08abacc9bdeb",
+        "timestamp": "2017-02-26T19:45:13.398512249+03:00",
+  
+        //type and level
+        "level": 2,
+        "levelString": "INFO",
+        "type": "vdlogUnitTest",
+  
+        //event payload, metadata
+        "metadata": {
+          "someText":"text",
+          "someNumber":10,
+          "someArray":[0,"1","b"]
+        },
+  
+        //Server info
+        "hostname":"server.local",
+        "pid": 11337,
+  
+        //Where does the logger function was actually called
+        "filename": "/var/www/localhost/index.php",
+        "line": 2,
+        "called": "/var/www/localhost/index.php:2"
+      }
 
 ```
 
@@ -83,7 +103,7 @@ Installing
 
 ```shell
 
-   go get gopkg.in/vodolaz095/vdlog.v2
+   go get gopkg.in/vodolaz095/vdlog.v3
 
 ```
 
@@ -96,11 +116,11 @@ Basic example
 
 	import (
 		"time"
-		"gopkg.in/vodolaz095/vdlog.v2"
+		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
 	func main(){
-		vdlog.SetConsoleVerbosity(LevelSilly)
+		vdlog.SetConsoleVerbosity(vdlog.LevelSilly)
 
 		vdlog.Sillyf("testFacility", "testing %s", "test")
 		vdlog.Verbosef("testFacility", "testing %s", "test")
@@ -126,8 +146,10 @@ Full example of usage
 	package main
 	
 	import (
+	  "fmt"
+	  "log"
 		"time"
-		"gopkg.in/vodolaz095/vdlog.v2"
+		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
 	func main() {
@@ -251,7 +273,7 @@ Full example of usage
 		/*
 		 * Using popular https://godoc.org/log package
 		 */
-		log.SetOutput(CreateIoWriter(LevelError, "test"))
+		log.SetOutput(vdlog.CreateIoWriter(vdlog.LevelError, "test"))
 		log.Printf("testing %s", "ioWriterLog")
 
 		//wait until all events are processed

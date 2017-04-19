@@ -8,14 +8,15 @@ import (
 
 func TestLogglySink(t *testing.T) {
 	evnt := Event{
-		Level:     LevelInfo,
-		Payload:   "Hello from vdlog",
-		Facility:  "vdlogUnitTest",
+		Level: LevelInfo,
+		Metadata: H{
+			"Payload": "Hello from vdlog",
+		},
+		Type:      "vdlogUnitTest",
 		Timestamp: time.Now(),
 		Line:      2,
 		Filename:  "/var/www/localhost/index.php",
 	}
-	evnt.prepare()
 	var token string
 
 	token = os.Getenv("LOGGLY_TOKEN")

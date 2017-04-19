@@ -7,7 +7,7 @@ import (
 )
 
 func cloggedSink(e Event) error {
-	if e.Facility == "toilet" {
+	if e.Type == "toilet" {
 		return fmt.Errorf("oops")
 	}
 	return nil
@@ -23,7 +23,7 @@ func TestBrokenSync(t *testing.T) {
 		if brokenSinkName != "CloggedSink" {
 			t.Errorf("BrokenSinkReporter was fired with wrong name of broken sink - %s instead of CloggedSink", brokenSinkName)
 		}
-		if eventThatCloggedIt.Payload != "Большая кала попалась!" {
+		if eventThatCloggedIt.Metadata["message"] != "Большая кала попалась!" {
 			t.Errorf("BrokenSinkReporter was fired with wrong event - %s", eventThatCloggedIt.StringWithCaller())
 		}
 		if errorRecievedFromSink.Error() != "oops" {
@@ -31,7 +31,7 @@ func TestBrokenSync(t *testing.T) {
 		}
 		fmt.Println("Попалась!")
 	}
-	Infof("toilet", "Большая %s попалась!", "кала")
+	EmitInfo("toilet", H{"message":"Большая кала попалась!"})
 	time.Sleep(time.Second)
 	if !called {
 		t.Errorf("BrokenSinkReporter was not called")

@@ -40,52 +40,48 @@ const (
 	EventDateFormatMilli = "Jan 02 15:04:05.000"
 )
 
+//H is a type for storing metadata of event
+type H map[string]interface{}
+
 //Event represents anything to be logged
 type Event struct {
 	UUID        string     `json:"uuid" xml:"uuid"`
 	Level       EventLevel `json:"level" xml:"level"`
 	LevelString string     `json:"levelString" xml:"levelString"`
-	Facility    string     `json:"facility" xml:"facility"`
-	Payload     string     `json:"payload" xml:"payload"`
+	Type        string     `json:"type" xml:"type"`
 	Filename    string     `json:"filename" xml:"filename"`
 	Line        int        `json:"line" xml:"line"`
 	Called      string     `json:"called" xml:"called"`
 	Hostname    string     `json:"hostname" xml:"hostname"`
 	Pid         int        `json:"pid" xml:"pid"`
 	Timestamp   time.Time  `json:"timestamp" xml:"timestamp"`
+	Metadata    H          `json:"metadata" xml:"metadata"`
+	Error       error      `json:"error" xml:"error"`
 }
 
 //vdlogEntryPoint is an internal function used for making event objects and sending them to spine channel
-func vdlogEntryPoint(level EventLevel, facility, format string, data ...interface{}) {
+func vdlogEntryPoint(level EventLevel, eventType string, payload H, err error) {
 	_, file, line, _ := runtime.Caller(2)
 	evnt := Event{
+		UUID:      uuid.NewV4().String(),
+		Pid:       os.Getpid(),
 		Level:     level,
-		Facility:  facility,
 		Timestamp: time.Now(),
 		Filename:  file,
 		Line:      line,
-		Payload:   fmt.Sprintf(format, data...),
+		Type:      eventType,
+		Metadata:  payload,
 	}
-	evnt.prepare()
-	spine <- evnt
-}
-
-func (e *Event) prepare() {
-	e.UUID = uuid.NewV4().String()
-	e.Pid = os.Getpid()
 	hostname, _ := os.Hostname()
-	e.Hostname = hostname
-	e.LevelString = e.GetLevelString()
-	e.Called = fmt.Sprintf("%s:%v", e.Filename, e.Line)
-}
-
-//Emit makes event send itself into spine
-func (e *Event) Emit() {
-	_, file, line, _ := runtime.Caller(2)
-	e.Filename = file
-	e.Line = line
-	e.prepare()
-	spine <- *e
+	evnt.Hostname = hostname
+	evnt.LevelString = evnt.GetLevelString()
+	evnt.Called = fmt.Sprintf("%s:%v", evnt.Filename, evnt.Line)
+	if err != nil {
+		evnt.Error = err
+	} else {
+		evnt.Error = nil
+	}
+	spine <- evnt
 }
 
 //Ago returns how long ago does the event was fired
@@ -120,12 +116,12 @@ func (e *Event) GetLevelString() (ret string) {
 
 //StringWithCaller returns string representation of an event with information where it was called in code and exactly when (to milliseconds)
 func (e *Event) StringWithCaller() string {
-	return fmt.Sprintf("%s %s %s <File: %s:%v>: %s", e.Timestamp.Format(EventDateFormatMilli), e.Facility, e.GetLevelString(), e.Filename, e.Line, e.Payload)
+	return fmt.Sprintf("%s %s %s <File: %s:%v>: %s", e.Timestamp.Format(EventDateFormatMilli), e.Type, e.GetLevelString(), e.Filename, e.Line, fmt.Sprint(e.Metadata))
 }
 
 //StringWithoutCaller returns string representation of an event without information where it was called in code and exactly when (to milliseconds)
 func (e *Event) StringWithoutCaller() string {
-	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Facility, e.GetLevelString(), e.Payload)
+	return fmt.Sprintf("%s %s %s : %s", e.Timestamp.Format(EventDateFormat), e.Type, e.GetLevelString(), fmt.Sprint(e.Metadata))
 }
 
 //String returns string representation of event. If even is of LevelDebug and LevelSilly, it has caller information where it was called in code

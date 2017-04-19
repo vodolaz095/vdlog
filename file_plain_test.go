@@ -13,11 +13,12 @@ func TestLogToFile(t *testing.T) {
 	os.Remove(filename)
 
 	LogToFile(filename, LevelError, LevelSilly)
-	Sillyf("testFacility", "testing %s", "test")
-	Verbosef("testFacility", "testing %s", "test")
-	Debugf("testFacility", "testing %s", "test")
-	Infof("testFacility", "testing %s", "test")
-	Warnf("testFacility", "testing %s", "test")
+	EmitSilly("testFacility", H{"testing": "test"})
+	EmitVerbose("testFacility", H{"testing": "test"})
+	EmitDebug("testFacility", H{"testing": "test"})
+	EmitInfo("testFacility", H{"testing": "test"})
+	EmitWarn("testFacility", H{"testing": "test"})
+	EmitError("testFacility", fmt.Errorf("some test %s", "error"), H{"testing": "test"})
 
 	time.Sleep(100 * time.Millisecond)
 	data, err := ioutil.ReadFile(filename)
