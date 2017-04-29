@@ -68,14 +68,14 @@ func createJournaldSink(host string, port int, tcp, local bool) func(e Event) er
 		fmt.Fprintf(stdin, "CODE_FILE=%s\n", e.Filename)
 		fmt.Fprintf(stdin, "CODE_LINE=%v\n", e.Line)
 		fmt.Fprintf(stdin, "SYSLOG_IDENTIFIER=%s\n", e.Type)
-		fmt.Fprintf(stdin, "MESSAGE=%q\n", fmt.Sprint(e.Metadata))
+		fmt.Fprintf(stdin, "MESSAGE=%s\n", fmt.Sprint(e.Metadata))
 		fmt.Fprintf(stdin, "PRIORITY=%d\n", journaldPriority)
 		fmt.Fprintf(stdin, "SYSLOG_PID=%d\n", e.Pid)
 		fmt.Fprintf(stdin, "OBJECT_PID=%d\n", e.Pid)
 		fmt.Fprintf(stdin, "VDLOG_LEVEL=%s\n", e.LevelString)
 		fmt.Fprintf(stdin, "VDLOG_CALLED=%s\n", e.Called)
 		for k,v := range e.Metadata {
-			fmt.Fprintf(stdin, "VDLOG_META_%s=%q\n", strings.ToUpper(k), fmt.Sprint(v))
+			fmt.Fprintf(stdin, "VDLOG_META_%s=%s\n", strings.ToUpper(k), fmt.Sprint(v))
 		}
 		err = stdin.Close()
 		if err != nil {
