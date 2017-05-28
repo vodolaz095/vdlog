@@ -1,24 +1,24 @@
 package vdlog
 
 import (
+	"os"
 	"testing"
 	"time"
-	"os"
 )
 
-
-func TestTelegramSinc(t *testing.T){
+func TestTelegramSinc(t *testing.T) {
 	telegramToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if telegramToken == "" {
 		t.Skip("Set environment variable TELEGRAM_BOT_TOKEN to run this test")
 		return
 	}
-	telegramChatId :=os.Getenv("TELEGRAM_CHAT_ID")
+
+	telegramChatId := os.Getenv("TELEGRAM_CHAT_ID")
 	if telegramChatId == "" {
 		t.Skip("Set environment variable TELEGRAM_CHAT_ID to run this test")
 		return
 	}
-	send:=createTelegramSink(telegramToken, telegramChatId, LevelInfo)
+	send := createTelegramSink(telegramToken, telegramChatId, LevelInfo)
 
 	evnt := Event{
 		Level: LevelInfo,
@@ -31,7 +31,7 @@ func TestTelegramSinc(t *testing.T){
 		Filename:  "/var/www/localhost/index.php",
 	}
 
-	err:=send(evnt)
+	err := send(evnt)
 	if err != nil {
 		t.Error(err)
 	}
