@@ -9,9 +9,15 @@ import (
 
 var consoleLogLevelTrigger EventLevel
 
+var useJSONinConsole = false
+
 //SetConsoleVerbosity allows to set verbosity level for console log sink
 func SetConsoleVerbosity(level EventLevel) {
 	consoleLogLevelTrigger = level
+}
+
+func SetConsoleJSON() {
+	useJSONinConsole = true
 }
 
 func consoleSink(e Event) error {
@@ -38,7 +44,13 @@ func consoleSink(e Event) error {
 	case LevelError:
 		return nil
 	}
-	_, err := fmt.Fprintf(os.Stderr, "%s\n", e.String())
+	var err error
+	if useJSONinConsole {
+		_, err = fmt.Fprintln(os.Stderr, string(e.ToIndentedJSON()))
+	} else {
+		_, err = fmt.Fprintln(os.Stderr, e.String())
+	}
+
 	color.Unset()
 	return err
 }
@@ -47,8 +59,13 @@ func consoleErrorSink(e Event) error {
 	if e.Level > LevelError {
 		return nil
 	}
+	var err error
 	color.Set(color.FgRed)
-	_, err := fmt.Fprintf(os.Stderr, "%s\n", e.String())
+	if useJSONinConsole {
+		_, err = fmt.Fprintln(os.Stderr, string(e.ToIndentedJSON()))
+	} else {
+		_, err = fmt.Fprintln(os.Stderr, e.String())
+	}
 	color.Unset()
 	return err
 }
