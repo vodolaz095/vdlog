@@ -29,20 +29,22 @@ See minimal example for module usage:
 	package main
 
 	import (
+		"fmt"
 		"time"
-		"gopkg.in/vodolaz095/vdlog.v2"
+		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
 	func main(){
-		vdlog.SetConsoleVerbosity(LevelSilly)
+		vdlog.SetConsoleVerbosity(vdlog.LevelSilly)
+		vdlog.SetConsoleJSON() //for pretty printing json
 
-		vdlog.Sillyf("testFacility", "testing %s", "test")
-		vdlog.Verbosef("testFacility", "testing %s", "test")
-		vdlog.Debugf("testFacility", "testing %s", "test")
-		vdlog.Infof("testFacility", "testing %s", "test")
-		vdlog.Warnf("testFacility", "testing %s", "test")
-		vdlog.Errorf("testFacility", "testing %s", "test")
-		vdlog.Error("testFacility", "Simple string")
+		vdlog.EmitError("test", fmt.Errorf("test %s", "error"), vdlog.H{"error": "error"})
+		vdlog.EmitWarn("test", vdlog.H{"warn": "warn"})
+		vdlog.EmitInfo("feedback", vdlog.H{"info": "info"})
+		vdlog.EmitVerbose("test", vdlog.H{"verbose": "verbose"})
+		vdlog.EmitDebug("test", vdlog.H{"debug": "debug"})
+		vdlog.EmitSilly("test", vdlog.H{"silly": "silly"})
+
 
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)

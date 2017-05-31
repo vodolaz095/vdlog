@@ -10,8 +10,12 @@ import (
 
 //const logglyURL = "logs-01.loggly.com/inputs/TOKEN/tag/http/"
 
-func createLogglySync(token string, secure bool) func(e Event) error {
+func createLogglySync(token string, secure bool, logglyLogLevelTrigger EventLevel) func(e Event) error {
 	return func(e Event) error {
+		if e.Level > logglyLogLevelTrigger {
+			return nil
+		}
+
 		var logglyURL string
 		if secure {
 			logglyURL = fmt.Sprintf("https://logs-01.loggly.com/inputs/%s/tag/http", token)
@@ -30,6 +34,6 @@ func createLogglySync(token string, secure bool) func(e Event) error {
 }
 
 //LogToLoggly allows to send messages to Loggly.com, if secure is true, https is used, which can increase security but reduce bandwidth
-func LogToLoggly(token string, secure bool) {
-	AddSink("loggly", createLogglySync(token, secure))
+func LogToLoggly(token string, secure bool, level EventLevel) {
+	AddSink("loggly", createLogglySync(token, secure, level))
 }

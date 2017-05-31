@@ -1,6 +1,7 @@
 package vdlog
 
 //https://stackoverflow.com/a/36623663/1885921
+//https://stackoverflow.com/questions/33126743/how-do-i-join-my-bot-to-the-channel/36623663#36623663
 
 import (
 	"fmt"
@@ -26,4 +27,9 @@ func createTelegramSink(botToken, chatId string, level EventLevel) func(e Event)
 		}
 		return nil
 	}
+}
+
+//LogToTelegram allows to send events to telegram channel/chat using telegram bot api
+func LogToTelegram(botToken, chatId string, level EventLevel) {
+	AddSink("telegram", createTelegramSink(botToken, chatId, level))
 }

@@ -24,7 +24,7 @@ func TestLogglySink(t *testing.T) {
 		t.Skip("set LOGGLY_TOKEN environment to run this test")
 	}
 
-	logglySink := createLogglySync(token, true)
+	logglySink := createLogglySync(token, true, LevelSilly)
 	err := logglySink(evnt)
 	if err != nil {
 		t.Error(err)

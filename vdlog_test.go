@@ -152,7 +152,13 @@ func Example() {
 	/*
 	 * Logging to Loggly.com
 	 */
-	LogToLoggly("{YOUR LOGGLY TOKEN PLS}", true) //true = https, false = http
+	LogToLoggly("{YOUR LOGGLY TOKEN PLS}", true, LevelSilly) //true = https, false = http
+
+	/*
+	 * Send notifications to telegram channel/group chat/personal chat
+	 */
+
+	LogToTelegram("286759464:AAFRalklssMW9hsZ592O8CxZo63QU7KM7d0", "-1001055587116", LevelInfo)
 
 	/*
 	 * Add custom sink for storing events

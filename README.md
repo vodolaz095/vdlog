@@ -32,7 +32,7 @@ Log storage support
 ======================
 
 From the box - STDERR, local file, [Journald](https://wiki.archlinux.org/index.php/Systemd), 
-[Loggly](https://loggly.com). 
+[Loggly](https://loggly.com),  [Telegram](https://core.telegram.org/) channel or group via bot.
 
 With little effort - anything.
 You just need to implement simple function that will process events, like this `AddSink` one
@@ -42,18 +42,27 @@ You just need to implement simple function that will process events, like this `
 	package main
 
 	import (
-	  "fmt"
+	  	"fmt"
 		"time"
 		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
 	func main(){
+		// it is custom sink for events of type `feedback`
 		vdlog.AddSink("feedback", func(e vdlog.Event) error {
 			fmt.Println("Feedback", e.String())
 			return nil
 		})
 
-		vdlog.Error("testFacility", "Simple string")
+		vdlog.EmitError("test", fmt.Errorf("test %s", "error"), vdlog.H{"error": "error"})
+		vdlog.EmitWarn("test", vdlog.H{"warn": "warn"})
+		
+		//this even will be processed by our defined sink `feedback`
+		vdlog.EmitInfo("feedback", vdlog.H{"info": "info"})
+		
+		vdlog.EmitVerbose("test", vdlog.H{"verbose": "verbose"})
+		vdlog.EmitDebug("test", vdlog.H{"debug": "debug"})
+		vdlog.EmitSilly("test", vdlog.H{"silly": "silly"})
 
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)
@@ -62,7 +71,25 @@ You just need to implement simple function that will process events, like this `
 
 ```
 
+
+How to send messages  to Telegram channel or group
+======================
+
+1. create telegram bot - see [https://core.telegram.org/bots](https://core.telegram.org/bots).
+2. invite this bot as admin of channel or as member of group you want to recieve log entries too.
+3. set up log sink using your bot token (something like this - `286759464:AAFRalklssMW9hsZ592O8CxZo63QU7KM7d0`)
+4. Get channel/group id using [console telegram client](https://github.com/vysheng/tg) and `channel_info` or `chat_info` commands
+5. Find proper id for channel. There is a [crazy solution](https://stackoverflow.com/a/39943226/1885921). For public/private channel you need to prepend `-100` to its id for notifications to be delivered.
+6. Enable sink for delivering events
+
+```go
+
+	vdlog.LogToTelegram("286759464:AAFRalklssMW9hsZ592O8CxZo63QU7KM7d0", "-1001055587116", vdlog.LevelInfo)
+
 ```
+
+
+
 
 How does logged events looks like (in JSON format)?
 ======================
@@ -121,14 +148,15 @@ Basic example
 
 	func main(){
 		vdlog.SetConsoleVerbosity(vdlog.LevelSilly)
+		vdlog.SetConsoleJSON() //for pretty printing json
 
-		vdlog.Sillyf("testFacility", "testing %s", "test")
-		vdlog.Verbosef("testFacility", "testing %s", "test")
-		vdlog.Debugf("testFacility", "testing %s", "test")
-		vdlog.Infof("testFacility", "testing %s", "test")
-		vdlog.Warnf("testFacility", "testing %s", "test")
-		vdlog.Errorf("testFacility", "testing %s", "test")
-		vdlog.Error("testFacility", "Simple string")
+		vdlog.EmitError("test", fmt.Errorf("test %s", "error"), vdlog.H{"error": "error"})
+		vdlog.EmitWarn("test", vdlog.H{"warn": "warn"})
+		vdlog.EmitInfo("feedback", vdlog.H{"info": "info"})
+		vdlog.EmitVerbose("test", vdlog.H{"verbose": "verbose"})
+		vdlog.EmitDebug("test", vdlog.H{"debug": "debug"})
+		vdlog.EmitSilly("test", vdlog.H{"silly": "silly"})
+
 
 		//wait until all events are processed
 		time.Sleep(100*time.Millisecond)
@@ -248,27 +276,26 @@ Full example of usage
 		}
 	
 		/*
-		 * Using global logger ("f" as last letter means formating like fmt.Printf)
+		 * Using global logger
 		 */
-		vdlog.Sillyf("testFacility", "testing %s", "test")
-		vdlog.Verbosef("testFacility", "testing %s", "test")
-		vdlog.Debugf("testFacility", "testing %s", "test")
-		vdlog.Infof("testFacility", "testing %s", "test")
-		vdlog.Warnf("testFacility", "testing %s", "test")
-		vdlog.Errorf("testFacility", "testing %s", "test")
-		vdlog.Error("testFacility", "Simple string")
+		vdlog.EmitError("test", fmt.Errorf("test %s", "error"), vdlog.H{"error": "error"})
+		vdlog.EmitWarn("test", vdlog.H{"warn": "warn"})
+		vdlog.EmitInfo("test", vdlog.H{"info": "info"})
+		vdlog.EmitVerbose("test", vdlog.H{"verbose": "verbose"})
+		vdlog.EmitDebug("test",vdlog. H{"debug": "debug"})
+		vdlog.EmitSilly("test", vdlog.H{"silly": "silly"})
+
 	
 		/*
 		 * Using custom logger for `feedback` facility
 		 */
-		feedbackLogger := vdlog.New("feedback")
-		feedbackLogger.Sillyf("testing %s", "test")
-		feedbackLogger.Verbosef("testing %s", "test")
-		feedbackLogger.Debugf("testing %s", "test")
-		feedbackLogger.Infof("testing %s", "test")
-		feedbackLogger.Warnf("testing %s", "test")
-		feedbackLogger.Errorf("testing %s", "test")
-		feedbackLogger.Error("Simple string")
+		feedbackLogger := New("feedback")
+		feedbackLogger.EmitError(fmt.Errorf("test %s", "error"), H{"error": "error"})
+		feedbackLogger.EmitWarn(H{"warn": "warn"})
+		feedbackLogger.EmitInfo(H{"info": "info"})
+		feedbackLogger.EmitVerbose(H{"verbose": "verbose"})
+		feedbackLogger.EmitDebug(H{"debug": "debug"})
+		feedbackLogger.EmitSilly(H{"silly": "silly"})
 
 		/*
 		 * Using popular https://godoc.org/log package
