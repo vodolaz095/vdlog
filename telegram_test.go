@@ -6,13 +6,12 @@ import (
 	"time"
 )
 
-func TestTelegramSinc(t *testing.T) {
+func TestTelegramSink(t *testing.T) {
 	telegramToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if telegramToken == "" {
 		t.Skip("Set environment variable TELEGRAM_BOT_TOKEN to run this test")
 		return
 	}
-
 	telegramChatId := os.Getenv("TELEGRAM_CHAT_ID")
 	if telegramChatId == "" {
 		t.Skip("Set environment variable TELEGRAM_CHAT_ID to run this test")
