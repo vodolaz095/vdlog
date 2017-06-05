@@ -13,7 +13,7 @@ func TestTelegramSink(t *testing.T) {
 		return
 	}
 	telegramChatID := os.Getenv("TELEGRAM_CHAT_ID")
-	if telegramChatId == "" {
+	if telegramChatID == "" {
 		t.Skip("Set environment variable TELEGRAM_CHAT_ID to run this test")
 		return
 	}
