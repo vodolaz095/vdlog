@@ -21,10 +21,10 @@ func createTelegramSink(botToken, chatID string, level EventLevel) func(e Event)
 		body.Set("text", string(e.ToIndentedJSON())) //TODO better formating
 		body.Set("chat_id", chatID)
 		resp, err := http.PostForm(telegramURL, body)
-		defer resp.Body.Close()
 		if err != nil {
 			return err
 		}
+		defer resp.Body.Close()
 		return nil
 	}
 }

@@ -25,10 +25,10 @@ func createLogglySync(token string, secure bool, logglyLogLevelTrigger EventLeve
 
 		body := bytes.NewBuffer(e.ToJSON())
 		resp, err := http.Post(logglyURL, "application/json; charset=utf-8", body)
-		defer resp.Body.Close()
 		if err != nil {
 			return err
 		}
+		defer resp.Body.Close()
 		return nil
 	}
 }
