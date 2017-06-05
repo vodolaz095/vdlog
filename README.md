@@ -43,7 +43,6 @@ You just need to implement simple function that will process events, like this `
 
 	import (
 	  	"fmt"
-		"time"
 		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
@@ -65,7 +64,7 @@ You just need to implement simple function that will process events, like this `
 		vdlog.EmitSilly("test", vdlog.H{"silly": "silly"})
 
 		//wait until all events are processed
-		time.Sleep(100*time.Millisecond)
+		vdlog.FlushLogs()
 	}
 
 
