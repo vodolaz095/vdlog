@@ -74,7 +74,7 @@ func createJournaldSink(host string, port int, tcp, local bool) func(e Event) er
 		fmt.Fprintf(stdin, "OBJECT_PID=%d\n", e.Pid)
 		fmt.Fprintf(stdin, "VDLOG_LEVEL=%s\n", e.LevelString)
 		fmt.Fprintf(stdin, "VDLOG_CALLED=%s\n", e.Called)
-		for k,v := range e.Metadata {
+		for k, v := range e.Metadata {
 			fmt.Fprintf(stdin, "VDLOG_META_%s=%s\n", strings.ToUpper(k), fmt.Sprint(v))
 		}
 		err = stdin.Close()

@@ -31,7 +31,7 @@ func TestBrokenSync(t *testing.T) {
 		}
 		fmt.Println("Попалась!")
 	}
-	EmitInfo("toilet", H{"message":"Большая кала попалась!"})
+	EmitInfo("toilet", H{"message": "Большая кала попалась!"})
 	time.Sleep(time.Second)
 	if !called {
 		t.Errorf("BrokenSinkReporter was not called")

@@ -44,8 +44,8 @@ var BrokenSinkReporter func(brokenSinkName string, eventThatCloggedIt Event, err
 
 //IoWriterSink is a struct that implements io.Writer for usage for https://godoc.org/log#SetOutput with Level and Facility defined
 type IoWriterSink struct {
-	Level    EventLevel
-	Type string
+	Level EventLevel
+	Type  string
 }
 
 //Write just sends any slice of bytes as payload of new event with prepending timestamp removed
@@ -53,7 +53,7 @@ func (i IoWriterSink) Write(p []byte) (n int, err error) {
 	n = len(p)
 	r, err := regexp.Compile(`\d{4}(\/\d\d){2}\s\d{1,2}\:\d{1,2}\:\d{1,2}\s`)
 	p = r.ReplaceAll(p, []byte(""))
-	vdlogEntryPoint(i.Level, i.Type, H{"message": string(p)},nil)
+	vdlogEntryPoint(i.Level, i.Type, H{"message": string(p)}, nil)
 	return
 }
 
