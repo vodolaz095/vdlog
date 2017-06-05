@@ -16,6 +16,7 @@ func SetConsoleVerbosity(level EventLevel) {
 	consoleLogLevelTrigger = level
 }
 
+//SetConsoleJSON makes console sink output properly formatted json
 func SetConsoleJSON() {
 	useJSONinConsole = true
 }

@@ -12,12 +12,12 @@ func TestTelegramSink(t *testing.T) {
 		t.Skip("Set environment variable TELEGRAM_BOT_TOKEN to run this test")
 		return
 	}
-	telegramChatId := os.Getenv("TELEGRAM_CHAT_ID")
+	telegramChatID := os.Getenv("TELEGRAM_CHAT_ID")
 	if telegramChatId == "" {
 		t.Skip("Set environment variable TELEGRAM_CHAT_ID to run this test")
 		return
 	}
-	send := createTelegramSink(telegramToken, telegramChatId, LevelInfo)
+	send := createTelegramSink(telegramToken, telegramChatID, LevelInfo)
 
 	evnt := Event{
 		Level: LevelInfo,

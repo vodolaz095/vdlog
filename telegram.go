@@ -9,18 +9,18 @@ import (
 	"net/url"
 )
 
-const telegramUrlTemplate = "https://api.telegram.org/bot%s/sendMessage"
+const telegramURLTemplate = "https://api.telegram.org/bot%s/sendMessage"
 
-func createTelegramSink(botToken, chatId string, level EventLevel) func(e Event) error {
+func createTelegramSink(botToken, chatID string, level EventLevel) func(e Event) error {
 	return func(e Event) error {
 		if e.Level > level {
 			return nil
 		}
-		telegramUrl := fmt.Sprintf(telegramUrlTemplate, botToken)
+		telegramURL := fmt.Sprintf(telegramURLTemplate, botToken)
 		body := url.Values{}
 		body.Set("text", string(e.ToIndentedJSON())) //TODO better formating
-		body.Set("chat_id", chatId)
-		resp, err := http.PostForm(telegramUrl, body)
+		body.Set("chat_id", chatID)
+		resp, err := http.PostForm(telegramURL, body)
 		defer resp.Body.Close()
 		if err != nil {
 			return err
@@ -30,6 +30,6 @@ func createTelegramSink(botToken, chatId string, level EventLevel) func(e Event)
 }
 
 //LogToTelegram allows to send events to telegram channel/chat using telegram bot api
-func LogToTelegram(botToken, chatId string, level EventLevel) {
-	AddSink("telegram", createTelegramSink(botToken, chatId, level))
+func LogToTelegram(botToken, chatID string, level EventLevel) {
+	AddSink("telegram", createTelegramSink(botToken, chatID, level))
 }
