@@ -30,7 +30,6 @@ See minimal example for module usage:
 
 	import (
 		"fmt"
-		"time"
 		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
@@ -47,7 +46,7 @@ See minimal example for module usage:
 
 
 		//wait until all events are processed
-		time.Sleep(100*time.Millisecond)
+		vdlog.FlushLogs()
 	}
 
 See full example for module usage:

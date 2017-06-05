@@ -203,12 +203,6 @@ func Example() {
 		//Output pretty printed JSON representation of message (slice of bytes converted to string)
 		fmt.Println("Indented JSON of event:", string(e.ToIndentedJSON()))
 
-		//Output XML representation of message (slice of bytes converted to string)
-		fmt.Println("XML of event:", string(e.ToXML()))
-
-		//Output pretty printed XML representation of message (slice of bytes converted to string)
-		fmt.Println("Indented XML of event:", string(e.ToIndentedXML()))
-
 		fmt.Println("===================")
 
 		//Sink processed event properly
@@ -251,5 +245,5 @@ func Example() {
 	log.Printf("testing %s", "ioWriterLog")
 
 	//wait until all events are processed
-	time.Sleep(100 * time.Millisecond)
+	FlushLogs()
 }

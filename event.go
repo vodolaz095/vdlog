@@ -2,7 +2,6 @@ package vdlog
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"os"
 	"runtime"
@@ -138,21 +137,9 @@ func (e *Event) ToJSON() (ret []byte) {
 	return
 }
 
-//ToXML returns json representation of event
-func (e *Event) ToXML() (ret []byte) {
-	ret, _ = xml.Marshal(e)
-	return
-}
-
 //ToIndentedJSON returns pretty formated json representation of event
 func (e *Event) ToIndentedJSON() (ret []byte) {
 	ret, _ = json.MarshalIndent(e, " ", "  ")
 	return
 
-}
-
-//ToIndentedXML returns pretty formated XML representation of event
-func (e *Event) ToIndentedXML() (ret []byte) {
-	ret, _ = xml.MarshalIndent(e, " ", "  ")
-	return
 }

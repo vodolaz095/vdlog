@@ -36,7 +36,18 @@ func TestCustomLoggerSync(t *testing.T) {
 	}
 	for k, v := range eventsLogDrain {
 		if v.Metadata["CustomLogIteration"] != k {
-			t.Errorf("Wrong event order, it have to be %s instead of %v", v.Metadata["CustomLogIteration"], k)
+			t.Errorf("wrong event order, it have to be %s instead of %v", v.Metadata["CustomLogIteration"], k)
+		}
+
+		if v.Ago().Seconds() < 2 {
+			t.Errorf("event %v was fired to long ago", k)
+		}
+
+		if len(v.ToIndentedJSON()) == 0 {
+			t.Errorf("wrong to ToIndentedJSON for event %v", k)
+		}
+		if len(v.ToJSON()) == 0 {
+			t.Errorf("wrong to ToJSON for event %v", k)
 		}
 	}
 }
@@ -49,6 +60,7 @@ func TestCustomLoggerAsync(t *testing.T) {
 	}
 	time.Sleep(2 * time.Second)
 	eventsCreated := len(eventsLogDrain)
+	SetConsoleJSON()
 	if eventsCreated != 200 {
 		t.Errorf("There is %v events instead of 200", eventsCreated)
 	}

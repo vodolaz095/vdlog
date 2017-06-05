@@ -142,7 +142,7 @@ Basic example
 	package main
 
 	import (
-		"time"
+		"fmt"
 		"gopkg.in/vodolaz095/vdlog.v3"
 	)
 
@@ -159,7 +159,7 @@ Basic example
 
 
 		//wait until all events are processed
-		time.Sleep(100*time.Millisecond)
+		vdlog.FlushLogs()
 	}
 
 
@@ -176,8 +176,7 @@ Full example of usage
 	import (
 	  "fmt"
 	  "log"
-		"time"
-		"gopkg.in/vodolaz095/vdlog.v3"
+  	  "gopkg.in/vodolaz095/vdlog.v3"
 	)
 
 	func main() {
@@ -304,7 +303,7 @@ Full example of usage
 		log.Printf("testing %s", "ioWriterLog")
 
 		//wait until all events are processed
-		time.Sleep(100*time.Millisecond)
+		vdlog.FlushLogs()
 	}
 
 ```

@@ -8,7 +8,7 @@ import (
 )
 
 var spine chan Event
-
+var drained chan bool
 var sinks map[string](func(e Event) error)
 
 func init() {
@@ -17,6 +17,7 @@ func init() {
 	AddSink("STDOUT", consoleSink)
 	AddSink("STDERR", consoleErrorSink)
 	spine = make(chan Event, 100)
+	drained = make(chan bool, 1)
 	go func() {
 		for {
 			event := <-spine
@@ -30,8 +31,18 @@ func init() {
 					}
 				}
 			}
+			if len(spine) == 0 {
+				if len(drained) == 0 {
+					drained <- true
+				}
+			}
 		}
 	}()
+}
+
+//FlushLogs locks process until spine channel is drained
+func FlushLogs() {
+	<-drained
 }
 
 //AddSink allows to add custom events' sink by defined event processing function
